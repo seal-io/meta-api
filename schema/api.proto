@@ -1,0 +1,193 @@
+syntax = "proto3";
+
+package schema;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/seal-io/meta-api/schema";
+
+message ComplianceLicense {
+  // id
+  string namespace = 1;
+  string name = 2;
+
+  // management
+  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp update_time = 12;
+  repeated string tags = 13;
+  bool deleted = 14;
+
+  // information
+  string description = 21;
+  repeated string references = 22;
+
+  // operation
+  bytes details = 31;
+}
+
+message ComplianceLicenseList {
+  repeated ComplianceLicense value = 1;
+}
+
+message ComplianceLicenseTag {
+  // id
+  string name = 1;
+
+  // management
+  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp update_time = 12;
+  bool deleted = 13;
+
+  // information
+  string description = 21;
+  repeated string references = 22;
+
+  // operation
+  string category = 31;
+}
+
+message ComplianceLicenseTagList {
+  repeated ComplianceLicenseTag value = 1;
+}
+
+message RiskSecretLeak {
+  // id
+  string namespace = 1;
+  string name = 2;
+
+  // management
+  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp update_time = 12;
+  repeated string tags = 13;
+  bool deleted = 14;
+
+  // information
+  string description = 21;
+  repeated string references = 22;
+
+  // operation
+  bytes block = 31;
+  bytes allow = 32;
+}
+
+message RiskSecretLeakList {
+  repeated RiskSecretLeak value = 1;
+}
+
+message RiskSecretLeakTag {
+  // id
+  string name = 1;
+
+  // management
+  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp update_time = 12;
+  bool deleted = 13;
+
+  // information
+  string description = 21;
+  repeated string references = 22;
+
+  // operation
+  string category = 31;
+}
+
+message RiskSecretLeakTagList {
+  repeated RiskSecretLeakTag value = 1;
+}
+
+message WeaknessVulnerability {
+  // id
+  string namespace = 1;
+  string name = 2;
+  string purl = 3;
+
+  // management
+  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp update_time = 12;
+  repeated string tags = 13;
+  bool deleted = 14;
+
+  // information
+  string description = 21;
+  repeated string references = 22;
+
+  // operation
+  string summary = 31;
+  string purl_fuzzy = 32;
+  string limited = 33;
+  string affected = 34;
+  repeated string patched = 35;
+  bytes cvss = 36;
+  repeated string cwes = 37;
+  google.protobuf.Timestamp published = 38;
+  google.protobuf.Timestamp modified = 39;
+}
+
+message WeaknessVulnerabilityList {
+  repeated WeaknessVulnerability value = 1;
+}
+
+message WeaknessVulnerabilityTag {
+  // id
+  string name = 1;
+
+  // management
+  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp update_time = 12;
+  bool deleted = 13;
+
+  // information
+  string description = 21;
+  repeated string references = 22;
+
+  // operation
+  string category = 31;
+  bytes cvsses = 32;
+  repeated string cwes = 33;
+  google.protobuf.Timestamp published = 34;
+  google.protobuf.Timestamp modified = 35;
+}
+
+message WeaknessVulnerabilityTagList {
+  repeated WeaknessVulnerabilityTag value = 1;
+}
+
+enum DatasetIngestRequestType {
+  Compliance_License_Tag = 0;
+  Compliance_License = 1;
+  Risk_Secret_Leak_Tag = 2;
+  Risk_Secret_Leak = 3;
+  Weakness_Vulnerability_Tag = 4;
+  Weakness_Vulnerability = 5;
+}
+
+message DatasetIngestRequest {
+  // pagination
+  int64 page = 1;
+  optional int64 per_page = 2;
+
+  // condition
+  DatasetIngestRequestType type = 11;
+  bool update = 12;
+}
+
+message DatasetIngestResponse{
+  // pagination
+  int64 next_page = 1;
+  int64 per_page = 2;
+  int64 total = 3;
+
+  // result
+  oneof list {
+    ComplianceLicenseList compliance_license = 11;
+    ComplianceLicenseTagList compliance_license_tag = 12;
+    RiskSecretLeakList risk_secret_leak = 13;
+    RiskSecretLeakTagList risk_secret_leak_tag = 14;
+    WeaknessVulnerabilityList weakness_vulnerability = 15;
+    WeaknessVulnerabilityTagList weakness_vulnerability_tag = 16;
+  }
+}
+
+service DatasetService {
+  rpc Ingest(stream DatasetIngestRequest) returns (stream DatasetIngestResponse) {}
+}
