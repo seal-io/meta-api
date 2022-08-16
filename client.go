@@ -14,9 +14,13 @@ import (
 
 // Client holds the actions for receiving from the exposing service.
 type Client interface {
-	// Ingest ingests all dataset from the exposing service,
+	// Ingest ingests specified type dataset from the exposing service,
 	// and parses dataset with the given IngestParser.
-	Ingest(ctx context.Context, since time.Time, parse IngestParser) (err error)
+	Ingest(ctx context.Context, typ schema.DatasetIngestRequestType, since time.Time, parse IngestParser) (err error)
+
+	// IngestAll ingests all types dataset from the exposing service,
+	// and parses dataset with the given IngestParser.
+	IngestAll(ctx context.Context, since time.Time, parse IngestParser) (err error)
 
 	// Close closes the client.
 	Close() error
@@ -46,49 +50,50 @@ type client struct {
 // IngestParser is the parser to parse the given api.DatasetIngestResponseList.
 type IngestParser func(currentPage, nextPage, pageSize, totalSize int64, list schema.DatasetIngestResponseList) error
 
-func (in *client) Ingest(ctx context.Context, since time.Time, parse IngestParser) error {
+func (in *client) Ingest(ctx context.Context, typ schema.DatasetIngestRequestType, since time.Time, parse IngestParser) error {
 	var cli, err = schema.NewDatasetServiceClient(in.cc).Ingest(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error creating ingest client")
 	}
-	for _, typ := range []schema.DatasetIngestRequestType{
-		schema.DatasetIngestRequestType_Compliance_License_Tag,
-		schema.DatasetIngestRequestType_Compliance_License,
-		schema.DatasetIngestRequestType_Risk_Secret_Leak_Tag,
-		schema.DatasetIngestRequestType_Risk_Secret_Leak,
-		schema.DatasetIngestRequestType_Weakness_Vulnerability_Tag,
-		schema.DatasetIngestRequestType_Weakness_Vulnerability,
-	} {
-		var page int64
-		for page >= 0 {
-			var req = &schema.DatasetIngestRequest{
-				Page: page,
-				Type: typ,
-			}
-			if !since.IsZero() {
-				req.Since = timestamppb.New(since)
-			}
-			err = cli.Send(req)
+	var page int64
+	for page >= 0 {
+		var req = &schema.DatasetIngestRequest{
+			Page: page,
+			Type: typ,
+		}
+		if !since.IsZero() {
+			req.Since = timestamppb.New(since)
+		}
+		err = cli.Send(req)
+		if err != nil {
+			return errors.Wrap(err, "error sending ingest request")
+		}
+		var resp *schema.DatasetIngestResponse
+		resp, err = cli.Recv()
+		if err != nil {
+			return errors.Wrap(err, "error receiving ingest response")
+		}
+		var currentPage = page
+		var nextPage = resp.GetNextPage()
+		var pageSize = resp.GetPerPage()
+		var total = resp.GetTotal()
+		var list = resp.GetList()
+		if parse != nil && resp.GetList() != nil {
+			err = parse(currentPage, nextPage, pageSize, total, list)
 			if err != nil {
-				return errors.Wrap(err, "error sending ingest request")
+				return errors.Wrap(err, "error parsing ingest response")
 			}
-			var resp *schema.DatasetIngestResponse
-			resp, err = cli.Recv()
-			if err != nil {
-				return errors.Wrap(err, "error receiving ingest response")
-			}
-			var currentPage = page
-			var nextPage = resp.GetNextPage()
-			var pageSize = resp.GetPerPage()
-			var total = resp.GetTotal()
-			var list = resp.GetList()
-			if parse != nil && resp.GetList() != nil {
-				err = parse(currentPage, nextPage, pageSize, total, list)
-				if err != nil {
-					return errors.Wrap(err, "error parsing ingest response")
-				}
-			}
-			page = nextPage
+		}
+		page = nextPage
+	}
+	return nil
+}
+
+func (in *client) IngestAll(ctx context.Context, since time.Time, parse IngestParser) error {
+	for typ := 0; typ < len(schema.DatasetIngestRequestType_name); typ++ {
+		var err = in.Ingest(ctx, schema.DatasetIngestRequestType(typ), since, parse)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
