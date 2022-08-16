@@ -1,4 +1,4 @@
-module github.com/seal-io/meta-api
+module github.com/seal-io/meta/api
 
 go 1.18
 

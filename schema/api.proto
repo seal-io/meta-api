@@ -4,7 +4,7 @@ package schema;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/seal-io/meta-api/schema";
+option go_package = "github.com/seal-io/meta/api/schema";
 
 message ComplianceLicense {
   // id

@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/seal-io/meta-api/schema"
+	"github.com/seal-io/meta/api/schema"
 )
 
 func TestClient(t *testing.T) {

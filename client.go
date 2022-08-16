@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/seal-io/meta-api/schema"
+	"github.com/seal-io/meta/api/schema"
 )
 
 // Client holds the actions for receiving from the exposing service.
