@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"testing"
+	"time"
 
 	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
@@ -20,9 +21,7 @@ func TestClient(t *testing.T) {
 
 	var eg, runCtx = errgroup.WithContext(context.Background())
 	eg.Go(func() error {
-		var ctx, cancel = context.WithCancel(runCtx)
-		defer cancel()
-		var server = exec.CommandContext(ctx, cmd, "grpc",
+		var server = exec.CommandContext(runCtx, cmd, "grpc",
 			"--log-debug",
 			"--log-stdout",
 			"--serve-on="+udx,
@@ -43,7 +42,7 @@ func TestClient(t *testing.T) {
 			return err
 		}
 		defer func() { _ = cli.Close() }()
-		err = cli.Ingest(runCtx, true, func(currentPage, nextPage, pageSize, totalSize int64, v schema.DatasetIngestResponseList) error {
+		err = cli.Ingest(runCtx, time.Time{}, func(currentPage, nextPage, pageSize, totalSize int64, v schema.DatasetIngestResponseList) error {
 			switch v.(type) {
 			case *schema.DatasetIngestResponse_ComplianceLicenseTag:
 				t.Logf("ingested compliance license tags, page: %d, page size: %d, total: %d",

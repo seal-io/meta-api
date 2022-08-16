@@ -2,10 +2,12 @@ package api
 
 import (
 	"context"
+	"time"
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/seal-io/meta/api/schema"
 )
@@ -14,7 +16,7 @@ import (
 type Client interface {
 	// Ingest ingests all dataset from the exposing service,
 	// and parses dataset with the given IngestParser.
-	Ingest(ctx context.Context, update bool, parse IngestParser) (err error)
+	Ingest(ctx context.Context, since time.Time, parse IngestParser) (err error)
 
 	// Close closes the client.
 	Close() error
@@ -44,7 +46,7 @@ type client struct {
 // IngestParser is the parser to parse the given api.DatasetIngestResponseList.
 type IngestParser func(currentPage, nextPage, pageSize, totalSize int64, list schema.DatasetIngestResponseList) error
 
-func (in *client) Ingest(ctx context.Context, update bool, parse IngestParser) error {
+func (in *client) Ingest(ctx context.Context, since time.Time, parse IngestParser) error {
 	var cli, err = schema.NewDatasetServiceClient(in.cc).Ingest(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error creating ingest client")
@@ -62,6 +64,9 @@ func (in *client) Ingest(ctx context.Context, update bool, parse IngestParser) e
 			var req = &schema.DatasetIngestRequest{
 				Page: page,
 				Type: typ,
+			}
+			if !since.IsZero() {
+				req.Since = timestamppb.New(since)
 			}
 			err = cli.Send(req)
 			if err != nil {
