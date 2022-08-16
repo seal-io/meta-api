@@ -7,9 +7,11 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/seal-io/meta/api/schema";
 
 message ComplianceLicense {
+  int64 id = 1;
+
   // id
-  string namespace = 1;
-  string name = 2;
+  string namespace = 2;
+  string name = 3;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -30,8 +32,10 @@ message ComplianceLicenseList {
 }
 
 message ComplianceLicenseTag {
+  int64 id = 1;
+
   // id
-  string name = 1;
+  string name = 2;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -51,9 +55,11 @@ message ComplianceLicenseTagList {
 }
 
 message RiskSecretLeak {
+  int64 id = 1;
+
   // id
-  string namespace = 1;
-  string name = 2;
+  string namespace = 2;
+  string name = 3;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -75,8 +81,10 @@ message RiskSecretLeakList {
 }
 
 message RiskSecretLeakTag {
+  int64 id = 1;
+
   // id
-  string name = 1;
+  string name = 2;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -96,10 +104,12 @@ message RiskSecretLeakTagList {
 }
 
 message WeaknessVulnerability {
+  int64 id = 1;
+
   // id
-  string namespace = 1;
-  string name = 2;
-  string purl = 3;
+  string namespace = 2;
+  string name = 3;
+  string purl = 4;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -128,8 +138,10 @@ message WeaknessVulnerabilityList {
 }
 
 message WeaknessVulnerabilityTag {
+  int64 id = 1;
+
   // id
-  string name = 1;
+  string name = 2;
 
   // management
   google.protobuf.Timestamp create_time = 11;
