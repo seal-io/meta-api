@@ -168,7 +168,7 @@ message DatasetIngestRequest {
 
   // condition
   DatasetIngestRequestType type = 11;
-  bool update = 12;
+  optional google.protobuf.Timestamp since = 12;
 }
 
 message DatasetIngestResponse{

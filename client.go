@@ -63,9 +63,6 @@ func (in *client) Ingest(ctx context.Context, update bool, parse IngestParser) e
 				Page: page,
 				Type: typ,
 			}
-			if page == 0 && update && typ%2 == 0 {
-				req.Update = true
-			}
 			err = cli.Send(req)
 			if err != nil {
 				return errors.Wrap(err, "error sending ingest request")
