@@ -7,7 +7,7 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/seal-io/meta/api/schema";
 
 message ComplianceLicense {
-  int64 id = 1;
+  int32 id = 1;
 
   // primary key
   string namespace = 2;
@@ -32,7 +32,7 @@ message ComplianceLicenseList {
 }
 
 message ComplianceLicenseTag {
-  int64 id = 1;
+  int32 id = 1;
 
   // primary key
   string name = 2;
@@ -55,7 +55,7 @@ message ComplianceLicenseTagList {
 }
 
 message RiskSecretLeak {
-  int64 id = 1;
+  int32 id = 1;
 
   // primary key
   string namespace = 2;
@@ -81,7 +81,7 @@ message RiskSecretLeakList {
 }
 
 message RiskSecretLeakTag {
-  int64 id = 1;
+  int32 id = 1;
 
   // primary key
   string name = 2;
@@ -104,7 +104,7 @@ message RiskSecretLeakTagList {
 }
 
 message WeaknessVulnerability {
-  int64 id = 1;
+  int32 id = 1;
 
   // primary key
   string namespace = 2;
@@ -138,7 +138,7 @@ message WeaknessVulnerabilityList {
 }
 
 message WeaknessVulnerabilityTag {
-  int64 id = 1;
+  int32 id = 1;
 
   // primary key
   string name = 2;
@@ -175,8 +175,8 @@ enum DatasetIngestRequestType {
 
 message DatasetIngestRequest {
   // pagination
-  int64 page = 1;
-  optional int64 per_page = 2;
+  int32 page = 1;
+  optional int32 per_page = 2;
 
   // condition
   DatasetIngestRequestType type = 11;
@@ -185,9 +185,9 @@ message DatasetIngestRequest {
 
 message DatasetIngestResponse{
   // pagination
-  int64 next_page = 1;
-  int64 per_page = 2;
-  int64 total = 3;
+  int32 next_page = 1;
+  int32 per_page = 2;
+  int32 total = 3;
 
   // result
   oneof list {

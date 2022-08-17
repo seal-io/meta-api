@@ -48,14 +48,14 @@ type client struct {
 }
 
 // IngestParser is the parser to parse the given api.DatasetIngestResponseList.
-type IngestParser func(currentPage, nextPage, pageSize, totalSize int64, list schema.DatasetIngestResponseList) error
+type IngestParser func(currentPage, nextPage, pageSize, totalSize int32, list schema.DatasetIngestResponseList) error
 
 func (in *client) Ingest(ctx context.Context, typ schema.DatasetIngestRequestType, since time.Time, parse IngestParser) error {
 	var cli, err = schema.NewDatasetServiceClient(in.cc).Ingest(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error creating ingest client")
 	}
-	var page int64
+	var page int32
 	for page >= 0 {
 		var req = &schema.DatasetIngestRequest{
 			Page: page,

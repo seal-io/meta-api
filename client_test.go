@@ -42,7 +42,7 @@ func TestClient(t *testing.T) {
 			return err
 		}
 		defer func() { _ = cli.Close() }()
-		err = cli.IngestAll(runCtx, time.Time{}, func(currentPage, nextPage, pageSize, totalSize int64, v schema.DatasetIngestResponseList) error {
+		err = cli.IngestAll(runCtx, time.Time{}, func(currentPage, nextPage, pageSize, totalSize int32, v schema.DatasetIngestResponseList) error {
 			switch v.(type) {
 			case *schema.DatasetIngestResponse_ComplianceLicenseTag:
 				t.Logf("ingested compliance license tags, page: %d, page size: %d, total: %d",
