@@ -47,19 +47,19 @@ type client struct {
 	cc *grpc.ClientConn
 }
 
-// IngestParser is the parser to parse the given api.DatasetIngestResponseList.
-type IngestParser func(currentPage, nextPage, pageSize, totalSize int32, list schema.DatasetIngestResponseList) error
+// IngestParser is the parser to parse the given api.DatasetIngestResponseBody.
+type IngestParser func(currentWindow int32, body schema.DatasetIngestResponseBody) error
 
 func (in *client) Ingest(ctx context.Context, typ schema.DatasetIngestRequestType, since time.Time, parse IngestParser) error {
 	var cli, err = schema.NewDatasetServiceClient(in.cc).Ingest(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error creating ingest client")
 	}
-	var page int32
-	for page >= 0 {
+	var window int32
+	for window >= 0 {
 		var req = &schema.DatasetIngestRequest{
-			Page: page,
-			Type: typ,
+			Window: window,
+			Type:   typ,
 		}
 		if !since.IsZero() {
 			req.Since = timestamppb.New(since)
@@ -73,18 +73,16 @@ func (in *client) Ingest(ctx context.Context, typ schema.DatasetIngestRequestTyp
 		if err != nil {
 			return errors.Wrap(err, "error receiving ingest response")
 		}
-		var currentPage = page
-		var nextPage = resp.GetNextPage()
-		var pageSize = resp.GetPerPage()
-		var total = resp.GetTotal()
-		var list = resp.GetList()
-		if parse != nil && resp.GetList() != nil {
-			err = parse(currentPage, nextPage, pageSize, total, list)
+		if parse != nil && resp.GetBody() != nil {
+			err = parse(window, resp.GetBody())
 			if err != nil {
 				return errors.Wrap(err, "error parsing ingest response")
 			}
 		}
-		page = nextPage
+		window = resp.GetNextWindow()
+		if resp.NextWindow == nil {
+			window = -1
+		}
 	}
 	return nil
 }

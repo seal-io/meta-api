@@ -42,26 +42,26 @@ func TestClient(t *testing.T) {
 			return err
 		}
 		defer func() { _ = cli.Close() }()
-		err = cli.IngestAll(runCtx, time.Time{}, func(currentPage, nextPage, pageSize, totalSize int32, v schema.DatasetIngestResponseList) error {
+		err = cli.IngestAll(runCtx, time.Time{}, func(currentWindow int32, v schema.DatasetIngestResponseBody) error {
 			switch v.(type) {
-			case *schema.DatasetIngestResponse_ComplianceLicenseTag:
-				t.Logf("ingested compliance license tags, page: %d, page size: %d, total: %d",
-					currentPage, pageSize, totalSize)
-			case *schema.DatasetIngestResponse_ComplianceLicense:
-				t.Logf("ingested compliance license entities, page: %d, page size: %d, total: %d",
-					currentPage, pageSize, totalSize)
-			case *schema.DatasetIngestResponse_RiskSecretLeakTag:
-				t.Logf("ingested risk secret leak tags, page: %d, page size: %d, total: %d",
-					currentPage, pageSize, totalSize)
-			case *schema.DatasetIngestResponse_RiskSecretLeak:
-				t.Logf("ingested risk secret leak entities, page: %d, page size: %d, total: %d",
-					currentPage, pageSize, totalSize)
-			case *schema.DatasetIngestResponse_WeaknessVulnerabilityTag:
-				t.Logf("ingested weakness vulnerability tags, page: %d, page size: %d, total: %d",
-					currentPage, pageSize, totalSize)
-			case *schema.DatasetIngestResponse_WeaknessVulnerability:
-				t.Logf("ingested weakness vulnerability entities, page: %d, page size: %d, total: %d",
-					currentPage, pageSize, totalSize)
+			case *schema.DatasetIngestResponse_ComplianceLicenseTags:
+				t.Logf("ingested compliance license tags of window %d",
+					currentWindow)
+			case *schema.DatasetIngestResponse_ComplianceLicenses:
+				t.Logf("ingested compliance license entities of window %d",
+					currentWindow)
+			case *schema.DatasetIngestResponse_RiskSecretLeakTags:
+				t.Logf("ingested risk secret leak tags of window %d",
+					currentWindow)
+			case *schema.DatasetIngestResponse_RiskSecretLeaks:
+				t.Logf("ingested risk secret leak entities of window %d",
+					currentWindow)
+			case *schema.DatasetIngestResponse_WeaknessVulnerabilityTags:
+				t.Logf("ingested weakness vulnerability tags of window %d",
+					currentWindow)
+			case *schema.DatasetIngestResponse_WeaknessVulnerabilities:
+				t.Logf("ingested weakness vulnerability entities of window %d",
+					currentWindow)
 			}
 			return nil
 		})

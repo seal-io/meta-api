@@ -7,11 +7,9 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/seal-io/meta/api/schema";
 
 message ComplianceLicense {
-  int32 id = 1;
-
   // primary key
-  string namespace = 2;
-  string name = 3;
+  string namespace = 1;
+  string name = 2;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -20,22 +18,21 @@ message ComplianceLicense {
   repeated string tags = 14;
 
   // information
-  string description = 21;
-  repeated string references = 22;
+  string code = 21;
+  string description = 22;
+  repeated string references = 23;
 
   // operation
   bytes details = 31;
 }
 
-message ComplianceLicenseList {
-  repeated ComplianceLicense value = 1;
+message ComplianceLicenses {
+  repeated ComplianceLicense items = 1;
 }
 
 message ComplianceLicenseTag {
-  int32 id = 1;
-
   // primary key
-  string name = 2;
+  string name = 1;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -50,16 +47,14 @@ message ComplianceLicenseTag {
   string category = 31;
 }
 
-message ComplianceLicenseTagList {
-  repeated ComplianceLicenseTag value = 1;
+message ComplianceLicenseTags {
+  repeated ComplianceLicenseTag items = 1;
 }
 
 message RiskSecretLeak {
-  int32 id = 1;
-
   // primary key
-  string namespace = 2;
-  string name = 3;
+  string namespace = 1;
+  string name = 2;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -68,23 +63,22 @@ message RiskSecretLeak {
   repeated string tags = 14;
 
   // information
-  string description = 21;
-  repeated string references = 22;
+  string code = 21;
+  string description = 22;
+  repeated string references = 23;
 
   // operation
   bytes block = 31;
   bytes allow = 32;
 }
 
-message RiskSecretLeakList {
-  repeated RiskSecretLeak value = 1;
+message RiskSecretLeaks {
+  repeated RiskSecretLeak items = 1;
 }
 
 message RiskSecretLeakTag {
-  int32 id = 1;
-
   // primary key
-  string name = 2;
+  string name = 1;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -99,17 +93,15 @@ message RiskSecretLeakTag {
   string category = 31;
 }
 
-message RiskSecretLeakTagList {
-  repeated RiskSecretLeakTag value = 1;
+message RiskSecretLeakTags {
+  repeated RiskSecretLeakTag items = 1;
 }
 
 message WeaknessVulnerability {
-  int32 id = 1;
-
   // primary key
-  string namespace = 2;
-  string name = 3;
-  string purl = 4;
+  string namespace = 1;
+  string name = 2;
+  string purl = 3;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -118,8 +110,9 @@ message WeaknessVulnerability {
   repeated string tags = 14;
 
   // information
-  string description = 21;
-  repeated string references = 22;
+  string code = 21;
+  string description = 22;
+  repeated string references = 23;
 
   // operation
   string summary = 31;
@@ -133,15 +126,13 @@ message WeaknessVulnerability {
   google.protobuf.Timestamp modified = 39;
 }
 
-message WeaknessVulnerabilityList {
-  repeated WeaknessVulnerability value = 1;
+message WeaknessVulnerabilities {
+  repeated WeaknessVulnerability items = 1;
 }
 
 message WeaknessVulnerabilityTag {
-  int32 id = 1;
-
   // primary key
-  string name = 2;
+  string name = 1;
 
   // management
   google.protobuf.Timestamp create_time = 11;
@@ -160,8 +151,8 @@ message WeaknessVulnerabilityTag {
   google.protobuf.Timestamp modified = 35;
 }
 
-message WeaknessVulnerabilityTagList {
-  repeated WeaknessVulnerabilityTag value = 1;
+message WeaknessVulnerabilityTags {
+  repeated WeaknessVulnerabilityTag items = 1;
 }
 
 enum DatasetIngestRequestType {
@@ -174,9 +165,9 @@ enum DatasetIngestRequestType {
 }
 
 message DatasetIngestRequest {
-  // pagination
-  int32 page = 1;
-  optional int32 per_page = 2;
+  // continuation
+  int32 window = 1; // start from 0
+  optional int32 window_size = 2;
 
   // condition
   DatasetIngestRequestType type = 11;
@@ -184,19 +175,18 @@ message DatasetIngestRequest {
 }
 
 message DatasetIngestResponse{
-  // pagination
-  int32 next_page = 1;
-  int32 per_page = 2;
-  int32 total = 3;
+  // continuation
+  optional int32 next_window = 1;
+  int32 window_size = 2;
 
   // result
-  oneof list {
-    ComplianceLicenseList compliance_license = 11;
-    ComplianceLicenseTagList compliance_license_tag = 12;
-    RiskSecretLeakList risk_secret_leak = 13;
-    RiskSecretLeakTagList risk_secret_leak_tag = 14;
-    WeaknessVulnerabilityList weakness_vulnerability = 15;
-    WeaknessVulnerabilityTagList weakness_vulnerability_tag = 16;
+  oneof body {
+    ComplianceLicenses compliance_licenses = 11;
+    ComplianceLicenseTags compliance_license_tags = 12;
+    RiskSecretLeaks risk_secret_leaks = 13;
+    RiskSecretLeakTags risk_secret_leak_tags = 14;
+    WeaknessVulnerabilities weakness_vulnerabilities = 15;
+    WeaknessVulnerabilityTags weakness_vulnerability_tags = 16;
   }
 }
 

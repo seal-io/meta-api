@@ -1,4 +1,4 @@
 package schema
 
-// DatasetIngestResponseList exposes the private isDatasetIngestResponse_List of protoc generation.
-type DatasetIngestResponseList = isDatasetIngestResponse_List
+// DatasetIngestResponseBody exposes the private isDatasetIngestResponse_Body of protoc generation.
+type DatasetIngestResponseBody = isDatasetIngestResponse_Body
