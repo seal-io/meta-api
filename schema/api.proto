@@ -9,15 +9,15 @@ option go_package = "github.com/seal-io/meta/api/schema";
 message ComplianceLicense {
   int64 id = 1;
 
-  // id
+  // primary key
   string namespace = 2;
   string name = 3;
 
   // management
   google.protobuf.Timestamp create_time = 11;
   google.protobuf.Timestamp update_time = 12;
-  repeated string tags = 13;
-  bool deleted = 14;
+  optional google.protobuf.Timestamp deprecate_time = 13;
+  repeated string tags = 14;
 
   // information
   string description = 21;
@@ -34,13 +34,13 @@ message ComplianceLicenseList {
 message ComplianceLicenseTag {
   int64 id = 1;
 
-  // id
+  // primary key
   string name = 2;
 
   // management
   google.protobuf.Timestamp create_time = 11;
   google.protobuf.Timestamp update_time = 12;
-  bool deleted = 13;
+  optional google.protobuf.Timestamp deprecate_time = 13;
 
   // information
   string description = 21;
@@ -57,15 +57,15 @@ message ComplianceLicenseTagList {
 message RiskSecretLeak {
   int64 id = 1;
 
-  // id
+  // primary key
   string namespace = 2;
   string name = 3;
 
   // management
   google.protobuf.Timestamp create_time = 11;
   google.protobuf.Timestamp update_time = 12;
-  repeated string tags = 13;
-  bool deleted = 14;
+  optional google.protobuf.Timestamp deprecate_time = 13;
+  repeated string tags = 14;
 
   // information
   string description = 21;
@@ -83,13 +83,13 @@ message RiskSecretLeakList {
 message RiskSecretLeakTag {
   int64 id = 1;
 
-  // id
+  // primary key
   string name = 2;
 
   // management
   google.protobuf.Timestamp create_time = 11;
   google.protobuf.Timestamp update_time = 12;
-  bool deleted = 13;
+  optional google.protobuf.Timestamp deprecate_time = 13;
 
   // information
   string description = 21;
@@ -106,7 +106,7 @@ message RiskSecretLeakTagList {
 message WeaknessVulnerability {
   int64 id = 1;
 
-  // id
+  // primary key
   string namespace = 2;
   string name = 3;
   string purl = 4;
@@ -114,8 +114,8 @@ message WeaknessVulnerability {
   // management
   google.protobuf.Timestamp create_time = 11;
   google.protobuf.Timestamp update_time = 12;
-  repeated string tags = 13;
-  bool deleted = 14;
+  optional google.protobuf.Timestamp deprecate_time = 13;
+  repeated string tags = 14;
 
   // information
   string description = 21;
@@ -140,13 +140,13 @@ message WeaknessVulnerabilityList {
 message WeaknessVulnerabilityTag {
   int64 id = 1;
 
-  // id
+  // primary key
   string name = 2;
 
   // management
   google.protobuf.Timestamp create_time = 11;
   google.protobuf.Timestamp update_time = 12;
-  bool deleted = 13;
+  optional google.protobuf.Timestamp deprecate_time = 13;
 
   // information
   string description = 21;
