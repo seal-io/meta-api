@@ -16,7 +16,7 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	const udx = "unix:/tmp/meta.sock"
+	var udx = "unix:" + filepath.Join(os.TempDir(), "meta.sock")
 	var cmd = testingServer(t)
 
 	var eg, runCtx = errgroup.WithContext(context.Background())
@@ -49,12 +49,6 @@ func TestClient(t *testing.T) {
 					currentWindow)
 			case *schema.DatasetIngestResponse_ComplianceLicenses:
 				t.Logf("ingested compliance license entities of window %d",
-					currentWindow)
-			case *schema.DatasetIngestResponse_RiskSecretLeakTags:
-				t.Logf("ingested risk secret leak tags of window %d",
-					currentWindow)
-			case *schema.DatasetIngestResponse_RiskSecretLeaks:
-				t.Logf("ingested risk secret leak entities of window %d",
 					currentWindow)
 			case *schema.DatasetIngestResponse_WeaknessVulnerabilityTags:
 				t.Logf("ingested weakness vulnerability tags of window %d",

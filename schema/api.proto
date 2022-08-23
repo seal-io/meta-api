@@ -51,52 +51,6 @@ message ComplianceLicenseTags {
   repeated ComplianceLicenseTag items = 1;
 }
 
-message RiskSecretLeak {
-  // primary key
-  string namespace = 1;
-  string name = 2;
-
-  // management
-  google.protobuf.Timestamp create_time = 11;
-  google.protobuf.Timestamp update_time = 12;
-  optional google.protobuf.Timestamp deprecate_time = 13;
-  repeated string tags = 14;
-
-  // information
-  string code = 21;
-  string description = 22;
-  repeated string references = 23;
-
-  // operation
-  bytes block = 31;
-  bytes allow = 32;
-}
-
-message RiskSecretLeaks {
-  repeated RiskSecretLeak items = 1;
-}
-
-message RiskSecretLeakTag {
-  // primary key
-  string name = 1;
-
-  // management
-  google.protobuf.Timestamp create_time = 11;
-  google.protobuf.Timestamp update_time = 12;
-  optional google.protobuf.Timestamp deprecate_time = 13;
-
-  // information
-  string description = 21;
-  repeated string references = 22;
-
-  // operation
-  string category = 31;
-}
-
-message RiskSecretLeakTags {
-  repeated RiskSecretLeakTag items = 1;
-}
-
 message WeaknessVulnerability {
   // primary key
   string namespace = 1;
@@ -158,10 +112,8 @@ message WeaknessVulnerabilityTags {
 enum DatasetIngestRequestType {
   Compliance_License_Tag = 0;
   Compliance_License = 1;
-  Risk_Secret_Leak_Tag = 2;
-  Risk_Secret_Leak = 3;
-  Weakness_Vulnerability_Tag = 4;
-  Weakness_Vulnerability = 5;
+  Weakness_Vulnerability_Tag = 2;
+  Weakness_Vulnerability = 3;
 }
 
 message DatasetIngestRequest {
@@ -183,10 +135,8 @@ message DatasetIngestResponse{
   oneof body {
     ComplianceLicenses compliance_licenses = 11;
     ComplianceLicenseTags compliance_license_tags = 12;
-    RiskSecretLeaks risk_secret_leaks = 13;
-    RiskSecretLeakTags risk_secret_leak_tags = 14;
-    WeaknessVulnerabilities weakness_vulnerabilities = 15;
-    WeaknessVulnerabilityTags weakness_vulnerability_tags = 16;
+    WeaknessVulnerabilities weakness_vulnerabilities = 13;
+    WeaknessVulnerabilityTags weakness_vulnerability_tags = 14;
   }
 }
 
