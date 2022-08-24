@@ -3,6 +3,7 @@ module github.com/seal-io/meta/api
 go 1.18
 
 require (
+	github.com/google/uuid v1.1.2
 	github.com/pkg/errors v0.9.1
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	google.golang.org/grpc v1.48.0
