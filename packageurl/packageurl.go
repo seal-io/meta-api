@@ -25,51 +25,56 @@ var (
 // special treatment during parsing.
 // https://github.com/package-url/purl-spec#known-purl-types
 const (
-	// TypeBitbucket is a pkg:bitbucket purl.
+	// TypeALPM is a pkg:alpm purl for Arch Linux and other users of the libalpm/pacman package manager, no default package repository.
+	TypeALPM = "alpm"
+	// TypeBitbucket is a pkg:bitbucket purl for Bitbucket-based packages, default repository is https://bitbucket.org.
 	TypeBitbucket = "bitbucket"
-	// TypeCocoapods is a pkg:cocoapods purl.
+	// TypeCocoapods is a pkg:cocoapods purl for Cocoapods, default repository is https://cdn.cocoapods.org/.
 	TypeCocoapods = "cocoapods"
-	// TypeCargo is a pkg:cargo purl.
+	// TypeCargo is a pkg:cargo purl for Rust packages, default repository is https://crates.io/.
 	TypeCargo = "cargo"
-	// TypeComposer is a pkg:composer purl.
+	// TypeComposer is a pkg:composer purl for Composer PHP packages, default repository is https://packagist.org.
 	TypeComposer = "composer"
-	// TypeConan is a pkg:conan purl.
+	// TypeConan is a pkg:conan purl for Conan C/C++ packages, default repository is https://center.conan.io.
 	TypeConan = "conan"
-	// TypeConda is a pkg:conda purl.
+	// TypeConda is a pkg:conda purl for Conda packages, default repository is https://repo.anaconda.com.
 	TypeConda = "conda"
-	// TypeCran is a pkg:cran purl.
+	// TypeCran is a pkg:cran purl for CRAN R packages, default repository is https://cran.r-project.org.
 	TypeCran = "cran"
-	// TypeDebian is a pkg:deb purl.
+	// TypeDebian is a pkg:deb purl for Debian, Debian derivatives, and Ubuntu packages, no default package repository.
 	TypeDebian = "deb"
-	// TypeDocker is a pkg:docker purl.
+	// TypeDocker is a pkg:docker purl for Docker images, default repository is https://hub.docker.com.
 	TypeDocker = "docker"
-	// TypeGem is a pkg:gem purl.
+	// TypeGem is a pkg:gem purl for Rubygems packages, default repository is https://rubygems.org.
 	TypeGem = "gem"
-	// TypeGeneric is a pkg:generic purl.
+	// TypeGeneric is a pkg:generic purl for plain, generic packages that do not fit anywhere else such as for "upstream-from-distro" packages.
+	// in particular this is handy for a plain version control repository such as a bare git repo.
 	TypeGeneric = "generic"
-	// TypeGithub is a pkg:github purl.
+	// TypeGithub is a pkg:github purl for Github-based packages, default repository is https://github.com.
 	TypeGithub = "github"
-	// TypeGolang is a pkg:golang purl.
+	// TypeGolang is a pkg:golang purl for Go packages, no default package repository.
 	TypeGolang = "golang"
-	// TypeHackage is a pkg:hackage purl.
+	// TypeHackage is a pkg:hackage purl for Haskell packages, default repository is https://hackage.haskell.org.
 	TypeHackage = "hackage"
-	// TypeHex is a pkg:hex purl.
+	// TypeHex is a pkg:hex purl for Hex packages, default repository is https://repo.hex.pm.
 	TypeHex = "hex"
-	// TypeMaven is a pkg:maven purl.
+	// TypeMaven is a pkg:maven purl for Maven packages, default repository is https://repo.maven.apache.org/maven2.
 	TypeMaven = "maven"
-	// TypeNPM is a pkg:npm purl.
+	// TypeNPM is a pkg:npm purl for Node NPM packages, default repository is https://registry.npmjs.org.
 	TypeNPM = "npm"
-	// TypeNuget is a pkg:nuget purl.
+	// TypeNuget is a pkg:nuget purl for NuGet .NET packages, default repository is https://www.nuget.org.
 	TypeNuget = "nuget"
-	// TypeOCI is a pkg:oci purl
+	// TypeOCI is a pkg:oci purl for all artifacts stored in registries that conform to the OCI Distribution Specification, including container images built by Docker and others, no canonical package repository for OCI artifacts.
 	TypeOCI = "oci"
-	// TypePyPi is a pkg:pypi purl.
+	// TypePub is a pkg:pub purl for Dart and Flutter packages, default repository is https://pub.dartlang.org.
+	TypePub = "pub"
+	// TypePyPi is a pkg:pypi purl for Python packages, default repository is https://pypi.python.org.
 	TypePyPi = "pypi"
-	// TypeRPM is a pkg:rpm purl.
+	// TypeRPM is a pkg:rpm purl for RPMs, no default package repository.
 	TypeRPM = "rpm"
-	// TypeSWID is a pkg:swid purl.
+	// TypeSWID is a pkg:swid purl for ISO-IEC 19770-2 Software Identification (SWID) tags.
 	TypeSWID = "swid"
-	// TypeSwift is pkg:swift purl
+	// TypeSwift is pkg:swift purl for Swift packages, no default package repository.
 	TypeSwift = "swift"
 )
 
