@@ -1,0 +1,26 @@
+name: x-mirror
+on:
+  workflow_dispatch:
+jobs:
+  meta-api:
+    timeout-minutes: 15
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: seal-io/meta
+          token: ${{ secrets.CI_GITHUB_TOKEN_READONLY }}
+          ref: 'main'
+          fetch-depth: 0
+      - name: Mirror
+        timeout-minutes: 15
+        run: |
+          git -C "${{ github.workspace }}" config --local user.name "github-actions[bot]"
+          git -C "${{ github.workspace }}" config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "${{ github.workspace }}" subtree split --prefix api --branch api
+          git -C "${{ github.workspace }}" checkout api
+          git -C "${{ github.workspace }}" branch -D main
+          git -C "${{ github.workspace }}" checkout -b main
+          git -C "${{ github.workspace }}" remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git -C "${{ github.workspace }}" push origin main --force
