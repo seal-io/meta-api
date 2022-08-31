@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/seal-io/meta/api/semver"
+	"github.com/seal-io/meta-api/semver"
 )
 
 func (p PackageURL) Equal(q PackageURL) bool {

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/seal-io/meta/api/packageurl"
+	"github.com/seal-io/meta-api/packageurl"
 )
 
 type TestFixture struct {

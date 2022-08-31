@@ -3,7 +3,7 @@
 **Meta Client** is a library contains code to interactive with [Seal Meta](https://github.com/seal-io/meta) server, it's
 first consumers are `github.com/seal-io/seal`, `github.com/seal-io/meta`.
 
-This repository is synchronized from [https://github.com/seal-io/meta/api](https://github.com/seal-io/meta/tree/main/api). Code
+This repository is synchronized from [https://github.com/seal-io/meta-api](https://github.com/seal-io/meta/tree/main/api). Code
 changes are made in that location,
 merged into `github.com/seal-io/meta` and later synced here.
 
