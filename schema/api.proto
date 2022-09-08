@@ -21,9 +21,12 @@ message ComplianceLicense {
   string code = 21;
   string description = 22;
   repeated string references = 23;
+  string text = 24;
+  string standard_header = 25;
+  string comments = 26;
 
-  // operation
-  bytes details = 31;
+  // extension
+  optional bytes specific = 101;
 }
 
 message ComplianceLicenses {
@@ -42,9 +45,10 @@ message ComplianceLicenseTag {
   // information
   string description = 21;
   repeated string references = 22;
+  string category = 23;
 
-  // operation
-  string category = 31;
+  // extension
+  optional bytes specific = 101;
 }
 
 message ComplianceLicenseTags {
@@ -62,22 +66,24 @@ message WeaknessVulnerability {
   google.protobuf.Timestamp update_time = 12;
   optional google.protobuf.Timestamp deprecate_time = 13;
   repeated string tags = 14;
+  string purl_fuzzy = 15;
 
   // information
   string code = 21;
   string description = 22;
   repeated string references = 23;
+  string summary = 24;
+  string mitigation = 25;
+  string exploitation = 26;
+  string affected = 27;
+  repeated string patched = 28;
+  bytes cvss = 29;
+  repeated string cwes = 30;
+  google.protobuf.Timestamp published = 31;
+  google.protobuf.Timestamp modified = 32;
 
-  // operation
-  string summary = 31;
-  string purl_fuzzy = 32;
-  string limited = 33;
-  string affected = 34;
-  repeated string patched = 35;
-  bytes cvss = 36;
-  repeated string cwes = 37;
-  google.protobuf.Timestamp published = 38;
-  google.protobuf.Timestamp modified = 39;
+  // extension
+  optional bytes specific = 101;
 }
 
 message WeaknessVulnerabilities {
@@ -96,13 +102,14 @@ message WeaknessVulnerabilityTag {
   // information
   string description = 21;
   repeated string references = 22;
+  string category = 23;
+  bytes cvsses = 24;
+  repeated string cwes = 25;
+  google.protobuf.Timestamp published = 26;
+  google.protobuf.Timestamp modified = 27;
 
-  // operation
-  string category = 31;
-  bytes cvsses = 32;
-  repeated string cwes = 33;
-  google.protobuf.Timestamp published = 34;
-  google.protobuf.Timestamp modified = 35;
+  // extension
+  optional bytes specific = 101;
 }
 
 message WeaknessVulnerabilityTags {
