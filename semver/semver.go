@@ -101,3 +101,49 @@ func InRange(l, rng string) bool {
 	}
 	return or
 }
+
+// IsUnboundedRange returns true if the given range is unbounded,
+// the following cases are unbounded ranges.
+//  - ""
+//  - ">=0"
+//  - "<6.3"
+func IsUnboundedRange(rng string) bool {
+	if rng != "" &&
+		!strings.Contains(rng, "||") && !strings.Contains(rng, ",") {
+		switch rng[0] {
+		case '>', '<':
+			return true
+		}
+	}
+	return false
+}
+
+// RestrictUnboundedRange returns bounded range restricted by the given boundary(w).
+func RestrictUnboundedRange(w, ubrng string) (string, bool) {
+	if ubrng == "" || w == "" {
+		return "", false
+	}
+
+	var v = strings.TrimLeftFunc(ubrng, func(r rune) bool {
+		switch r {
+		default:
+			return false
+		case '>', '<', '=':
+			return true
+		}
+	})
+	var vop = strings.TrimSuffix(ubrng, v)
+
+	var cr = Compare(v, w)
+	switch cr {
+	case 1: // v > w
+		if vop[0] == '<' {
+			return ">=" + w + "," + ubrng, true
+		}
+	case -1: // v < w
+		if vop[0] == '>' {
+			return ubrng + "," + "<=" + w, true
+		}
+	}
+	return "", false
+}
