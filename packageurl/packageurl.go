@@ -23,7 +23,7 @@ var (
 
 // These are the known purl types as defined in the spec. Some of these require
 // special treatment during parsing.
-// https://github.com/package-url/purl-spec#known-purl-types
+// https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#known-purl-types
 const (
 	// TypeALPM is a pkg:alpm purl for Arch Linux and other users of the libalpm/pacman package manager, no default package repository.
 	TypeALPM = "alpm"
@@ -76,6 +76,16 @@ const (
 	TypeSWID = "swid"
 	// TypeSwift is pkg:swift purl for Swift packages, no default package repository.
 	TypeSwift = "swift"
+)
+
+// These are the candidate purl types as promoted in the spec,
+// they may be changed.
+// https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#other-candidate-types-to-define
+// NB(thxCode): we can view many candidates from the above references,
+// recommend to support one, then add one.
+var (
+	// TypeAlpine is a pkg:alpine purl for Alpine Linux, default repository is https://dl-cdn.alpinelinux.org/alpine/.
+	TypeAlpine = "alpine"
 )
 
 // Qualifier represents a single key=value qualifier in the package url

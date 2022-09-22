@@ -130,6 +130,10 @@ func isArchEqual(typ string, p, q string) bool {
 	if p == "" && q == "" {
 		return true
 	}
+	if p == "all" || q == "all" ||
+		p == "*" || q == "*" {
+		return true
+	}
 	if p == "" || q == "" {
 		return false
 	}
