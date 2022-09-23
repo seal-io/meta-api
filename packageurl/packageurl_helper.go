@@ -7,6 +7,7 @@ import (
 	"github.com/seal-io/meta-api/semver"
 )
 
+// Equal returns true if everything of the given package url are the same.
 func (p PackageURL) Equal(q PackageURL) bool {
 	if p.Type != q.Type {
 		return false
@@ -46,7 +47,61 @@ func (p PackageURL) Equal(q PackageURL) bool {
 	return p.Subpath == q.Subpath
 }
 
-func (p PackageURL) CompatibleWith(q PackageURL) bool {
+type _CompatibleWithOptions struct {
+	IgnoreVersion bool
+	IgnoreDistro  bool
+	IgnoreOS      bool
+	IgnoreArch    bool
+	IgnoreSubpath bool
+}
+
+type CompatibleOption func(*_CompatibleWithOptions)
+
+func WithoutVersion() CompatibleOption {
+	return func(o *_CompatibleWithOptions) {
+		o.IgnoreVersion = true
+	}
+}
+
+func WithoutDistro() CompatibleOption {
+	return func(o *_CompatibleWithOptions) {
+		o.IgnoreDistro = true
+	}
+}
+
+func WithoutOS() CompatibleOption {
+	return func(o *_CompatibleWithOptions) {
+		o.IgnoreOS = true
+	}
+}
+
+func WithoutArch() CompatibleOption {
+	return func(o *_CompatibleWithOptions) {
+		o.IgnoreArch = true
+	}
+}
+
+func WithoutSubpath() CompatibleOption {
+	return func(o *_CompatibleWithOptions) {
+		o.IgnoreSubpath = true
+	}
+}
+
+// CompatibleWith returns true if the following criteria of the given package url are the same.
+//  - type/namespace/name
+//  - [optional] major.minor of the version
+//  - [optional] distro/os/arch of the qualifiers
+//  - [optional] subpath
+// the optional conditions can be disabled by CompatibleOption.
+func (p PackageURL) CompatibleWith(q PackageURL, opts ...CompatibleOption) bool {
+	var o _CompatibleWithOptions
+	for i := range opts {
+		if opts[i] == nil {
+			continue
+		}
+		opts[i](&o)
+	}
+
 	if p.Type != q.Type {
 		return false
 	}
@@ -57,23 +112,26 @@ func (p PackageURL) CompatibleWith(q PackageURL) bool {
 		return false
 	}
 
-	if semver.MajorMinor(p.Version) != semver.MajorMinor(q.Version) {
+	if !o.IgnoreVersion && semver.MajorMinor(p.Version) != semver.MajorMinor(q.Version) {
 		return false
 	}
 
 	if len(p.Qualifiers) != 0 && len(q.Qualifiers) != 0 {
 		var pm, qm = p.Qualifiers.Map(), q.Qualifiers.Map()
-		if !isDistroEqual(p.Type, pm["distro"], qm["distro"]) {
+		if !o.IgnoreDistro && !isDistroEqual(p.Type, pm["distro"], qm["distro"]) {
 			return false
 		}
-		if !isOSEqual(p.Type, pm["os"], qm["os"]) {
+		if !o.IgnoreOS && !isOSEqual(p.Type, pm["os"], qm["os"]) {
 			return false
 		}
-		if !isArchEqual(p.Type, pm["arch"], qm["arch"]) {
+		if !o.IgnoreArch && !isArchEqual(p.Type, pm["arch"], qm["arch"]) {
 			return false
 		}
 	}
 
+	if o.IgnoreSubpath {
+		return true
+	}
 	if p.Subpath == "" {
 		p.Subpath = "/"
 	}
@@ -81,6 +139,10 @@ func (p PackageURL) CompatibleWith(q PackageURL) bool {
 		q.Subpath = "/"
 	}
 	return strings.HasPrefix(q.Subpath, p.Subpath)
+}
+
+func (p PackageURL) IsLinuxPackage() bool {
+	return IsLinuxPackage(p.Type)
 }
 
 func isDistroEqual(typ string, p, q string) bool {
@@ -92,7 +154,10 @@ func isDistroEqual(typ string, p, q string) bool {
 	if p == "" || q == "" {
 		return false
 	}
-	return p == q
+	if p == q {
+		return true
+	}
+	return strings.HasPrefix(p, q) || strings.HasPrefix(q, p)
 }
 
 func isOSEqual(typ string, p, q string) bool {
@@ -170,4 +235,12 @@ func normalizeArch(typ string, v string) string {
 		return "arm64"
 	}
 	return v
+}
+
+func IsLinuxPackage(typ string) bool {
+	switch typ {
+	case TypeRPM, TypeDebian, TypeALPM, TypeAlpine:
+		return true
+	}
+	return false
 }
