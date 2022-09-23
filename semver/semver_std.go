@@ -109,14 +109,13 @@ func Compare(v, w string) int {
 func compare(v, w string) (int, bool) {
 	pv, ok1 := parse(v)
 	pw, ok2 := parse(w)
-	if !ok1 && !ok2 {
-		return 0, false
-	}
-	if !ok1 {
-		return -1, false
-	}
-	if !ok2 {
-		return +1, false
+	if !ok1 || !ok2 {
+		if !ok1 {
+			return -1, false
+		}
+		if !ok2 {
+			return +1, false
+		}
 	}
 	if c := compareInt(pv.major, pw.major); c != 0 {
 		return c, true
@@ -344,22 +343,26 @@ func comparePrerelease(x, y string) int {
 		if dx != dy {
 			ix := isNum(dx)
 			iy := isNum(dy)
-			if ix != iy {
+			if ix != iy { // one of them is not numeric
 				if ix {
 					return -1
 				} else {
 					return +1
 				}
 			}
-			if ix {
-				if len(dx) < len(dy) {
-					return -1
+			if ix { // both are numeric
+				if x == y {
+					if len(dx) < len(dy) {
+						return -1
+					}
+					if len(dx) > len(dy) {
+						return +1
+					}
 				}
-				if len(dx) > len(dy) {
-					return +1
-				}
+				// make rest as dx,dy if rest are not the same
+				dx, dy = x, y
 			}
-			if dx < dy {
+			if dx < dy { // both are not numeric
 				return -1
 			} else {
 				return +1
@@ -378,9 +381,24 @@ func compareRest(x, y string) int {
 }
 
 func nextIdent(x string) (dx, rest string) {
-	i := 0
+	if isNum(x) {
+		return x, ""
+	}
+	var i = 0
 	for i < len(x) && x[i] != '.' {
 		i++
 	}
-	return x[:i], x[i:]
+	dx, rest = x[:i], x[i:]
+	if i != len(x) {
+		return
+	}
+	// revert searching
+	i = len(x) - 1
+	for i >= 0 && ('0' <= x[i] && x[i] <= '9') {
+		i--
+	}
+	if x[:i+1] == dx {
+		return
+	}
+	return x[i+1:], x[:i+1]
 }
