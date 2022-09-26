@@ -141,8 +141,9 @@ func (p PackageURL) CompatibleWith(q PackageURL, opts ...CompatibleOption) bool 
 	return strings.HasPrefix(q.Subpath, p.Subpath)
 }
 
-func (p PackageURL) IsLinuxPackage() bool {
-	return IsLinuxPackage(p.Type)
+// IsLinuxDistro returns true if the package is a Linux distro.
+func (p PackageURL) IsLinuxDistro() bool {
+	return IsLinuxPackage(&p) && IsDistroPackage(&p)
 }
 
 func isDistroEqual(typ string, p, q string) bool {
@@ -237,10 +238,21 @@ func normalizeArch(typ string, v string) string {
 	return v
 }
 
-func IsLinuxPackage(typ string) bool {
-	switch typ {
+// IsLinuxPackage returns true if the given package type is managed by some kinds of Linux Package Manager.
+func IsLinuxPackage(p *PackageURL) bool {
+	switch p.Type {
 	case TypeRPM, TypeDebian, TypeALPM, TypeAlpine:
 		return true
+	}
+	return false
+}
+
+// IsDistroPackage returns true if the given package qualifiers has a distro limitation.
+func IsDistroPackage(p *PackageURL) bool {
+	for i := range p.Qualifiers {
+		if p.Qualifiers[i].Key == "distro" {
+			return p.Qualifiers[i].Value != ""
+		}
 	}
 	return false
 }
