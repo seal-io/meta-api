@@ -105,8 +105,9 @@ message WeaknessVulnerabilityTag {
   string category = 23;
   bytes cvsses = 24;
   repeated string cwes = 25;
-  google.protobuf.Timestamp published = 26;
-  google.protobuf.Timestamp modified = 27;
+  bytes cpes = 26;
+  google.protobuf.Timestamp published = 27;
+  google.protobuf.Timestamp modified = 28;
 
   // extension
   optional bytes specific = 101;
