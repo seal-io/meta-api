@@ -179,14 +179,14 @@ func parse(v string) (p parsed, ok bool) {
 		p.err = "bad patch version"
 		return
 	}
-	if len(v) > 0 && v[0] == '-' {
+	if len(v) > 0 && (v[0] == '-' || v[0] == '~') {
 		p.prerelease, v, ok = parsePrerelease(v)
 		if !ok {
 			p.err = "bad prerelease"
 			return
 		}
 	}
-	if len(v) > 0 && v[0] == '+' {
+	if len(v) > 0 && (v[0] == '+' || v[0] == '~') {
 		p.build, v, ok = parseBuild(v)
 		if !ok {
 			p.err = "bad build"
@@ -225,7 +225,7 @@ func parsePrerelease(v string) (t, rest string, ok bool) {
 	// a series of dot separated identifiers immediately following the patch version.
 	// Identifiers MUST comprise only ASCII alphanumerics and hyphen [0-9A-Za-z-].
 	// Identifiers MUST NOT be empty. Numeric identifiers MUST NOT include leading zeroes."
-	if v == "" || v[0] != '-' {
+	if v == "" || (v[0] != '-' && v[0] != '~') {
 		return
 	}
 	i := 1
@@ -249,7 +249,7 @@ func parsePrerelease(v string) (t, rest string, ok bool) {
 }
 
 func parseBuild(v string) (t, rest string, ok bool) {
-	if v == "" || v[0] != '+' {
+	if v == "" || (v[0] != '+' && v[0] != '~') {
 		return
 	}
 	i := 1
