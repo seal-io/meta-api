@@ -1,5 +1,38 @@
-// parsing got from on golang.org/x/mod/semver is covered by the BSD License with Copyright (c) 2018, Go Authors.
+// Copyright 2022-present Seal Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
+// Copyright 2018 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Package semver implements comparison of semantic version strings.
+// In this package, semantic version strings must begin with a leading "v",
+// as in "v1.0.0".
+//
+// The general form of a semantic version string accepted by this package is
+//
+//	vMAJOR[.MINOR[.PATCH[-PRERELEASE][+BUILD]]]
+//
+// where square brackets indicate optional parts of the syntax;
+// MAJOR, MINOR, and PATCH are decimal integers without extra leading zeros;
+// PRERELEASE and BUILD are each a series of non-empty dot-separated identifiers
+// using only alphanumeric characters and hyphens; and
+// all-numeric PRERELEASE identifiers must not have leading zeros.
+//
+// This package follows Semantic Versioning 2.0.0 (see semver.org)
+// with two exceptions. First, it requires the "v" prefix. Second, it recognizes
+// vMAJOR and vMAJOR.MINOR (with no prerelease or build suffixes)
+// as shorthands for vMAJOR.0.0 and vMAJOR.MINOR.0.
 package semver
 
 type parsed struct {

@@ -1,4 +1,8 @@
 // Copyright 2022-present Seal Inc. All rights reserved.
+// This source code is licensed under the Apache 2.0 license found
+// in the LICENSE file in the root directory of this source tree.
+
+// Copyright (c) Facebook, Inc. and its affiliates.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,15 +61,15 @@ func (a *Attributes) BindToURI() string {
 		}
 		parts = parts[:i]
 	}
-	return uriPrefix + strings.Join(parts, ":")
+	return URIPrefix + strings.Join(parts, ":")
 }
 
 // UnbindURI loads WFN from URI
 func UnbindURI(s string) (*Attributes, error) {
-	if !strings.HasPrefix(s, uriPrefix) {
+	if !strings.HasPrefix(s, URIPrefix) {
 		return nil, fmt.Errorf("unbind uri: bad prefix in URI %q", s)
 	}
-	s = strings.ToLower(s[len(uriPrefix):]) // reject schema prefix + normalize
+	s = strings.ToLower(s[len(URIPrefix):]) // reject schema prefix + normalize
 	attr := Attributes{}
 	var err error
 	for i, partN := 0, 0; i < len(s); i, partN = i+1, partN+1 {

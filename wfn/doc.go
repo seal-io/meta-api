@@ -4,7 +4,7 @@
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7695.pdf and
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7696.pdf
 //
-// Copyright 2022-present Seal Inc. All rights reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

@@ -1,4 +1,8 @@
 // Copyright 2022-present Seal Inc. All rights reserved.
+// This source code is licensed under the Apache 2.0 license found
+// in the LICENSE file in the root directory of this source tree.
+
+// Copyright (c) Facebook, Inc. and its affiliates.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,16 +42,16 @@ func (a *Attributes) BindToFmtString() string {
 	} {
 		parts[i] = bindValueFS(s)
 	}
-	return fsbPrefix + strings.Join(parts, ":")
+	return FSBPrefix + strings.Join(parts, ":")
 }
 
 // UnbindFmtString loads WFN from formatted string
 func UnbindFmtString(s string) (*Attributes, error) {
-	if !strings.HasPrefix(s, fsbPrefix) {
+	if !strings.HasPrefix(s, FSBPrefix) {
 		return nil, fmt.Errorf("bad prefix in FSB %q", s)
 	}
 	attr := &Attributes{}
-	for i, partN := len(fsbPrefix), 0; i < len(s); i, partN = i+1, partN+1 {
+	for i, partN := len(FSBPrefix), 0; i < len(s); i, partN = i+1, partN+1 {
 		var err error
 		switch partN {
 		case 0:

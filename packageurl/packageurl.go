@@ -1,4 +1,11 @@
-// Package packageurl implements the https://github.com/package-url/purl-spec.
+// Copyright 2022-present Seal Inc. All rights reserved.
+// This source code is licensed under the Apache 2.0 license found
+// in the LICENSE file in the root directory of this source tree.
+
+// Copyright (c) the purl authors. All rights reserved.
+// Use of this source code is governed by a MIT
+// license that can be found in the LICENSE file.
+
 package packageurl
 
 import (

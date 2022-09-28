@@ -235,6 +235,9 @@ func normalizeArch(typ string, v string) string {
 	if strings.HasPrefix(v, "armv8") {
 		return "arm64"
 	}
+	if strings.HasPrefix(v, "armv9") {
+		return "arm64"
+	}
 	return v
 }
 
