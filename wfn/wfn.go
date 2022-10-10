@@ -53,12 +53,6 @@ var parsers = map[string]func(s string) (*Attributes, error){
 	FSBPrefix: UnbindFmtString,
 }
 
-// ShouldParse likes Parse but without error returning.
-func ShouldParse(s string) *Attributes {
-	var p, _ = Parse(s)
-	return p
-}
-
 // Parse parses Attributes from URI or formatted string binding.
 func Parse(s string) (*Attributes, error) {
 	for prefix, parserFunc := range parsers {
@@ -67,6 +61,12 @@ func Parse(s string) (*Attributes, error) {
 		}
 	}
 	return nil, fmt.Errorf("wfn: unsupported format %q", s)
+}
+
+// ShouldParse likes Parse but without error returning.
+func ShouldParse(s string) *Attributes {
+	var p, _ = Parse(s)
+	return p
 }
 
 // Attributes defines the WFN Data Model Attributes.
