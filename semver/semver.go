@@ -104,7 +104,6 @@ func InRange(l, rng string) bool {
 
 // IsUnboundedRange returns true if the given range is unbounded,
 // the following cases are unbounded ranges.
-//  - ""
 //  - ">=0"
 //  - "<6.3"
 func IsUnboundedRange(rng string) bool {
@@ -112,6 +111,36 @@ func IsUnboundedRange(rng string) bool {
 		!strings.Contains(rng, "||") && !strings.Contains(rng, ",") {
 		switch rng[0] {
 		case '>', '<':
+			return true
+		}
+	}
+	return false
+}
+
+// IsUpperRangeOnly returns true if the given range is unbounded up range,
+// the following cases are only upper ranges.
+//  - ">=0"
+//  - ">0"
+func IsUpperRangeOnly(rng string) bool {
+	if rng != "" &&
+		!strings.Contains(rng, "||") && !strings.Contains(rng, ",") {
+		switch rng[0] {
+		case '>':
+			return true
+		}
+	}
+	return false
+}
+
+// IsLowerRangeOnly returns true if the given range is unbounded low range,
+// the following cases are only upper ranges.
+//  - "<6.3"
+//  - "<=6.3"
+func IsLowerRangeOnly(rng string) bool {
+	if rng != "" &&
+		!strings.Contains(rng, "||") && !strings.Contains(rng, ",") {
+		switch rng[0] {
+		case '<':
 			return true
 		}
 	}

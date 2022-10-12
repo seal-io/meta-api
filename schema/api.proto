@@ -79,8 +79,9 @@ message WeaknessVulnerability {
   repeated string patched = 28;
   bytes cvss = 29;
   repeated string cwes = 30;
-  google.protobuf.Timestamp published = 31;
-  google.protobuf.Timestamp modified = 32;
+  bytes epss = 31;
+  google.protobuf.Timestamp published = 32;
+  google.protobuf.Timestamp modified = 33;
 
   // extension
   optional bytes specific = 101;
@@ -106,8 +107,9 @@ message WeaknessVulnerabilityTag {
   bytes cvsses = 24;
   repeated string cwes = 25;
   bytes cpes = 26;
-  google.protobuf.Timestamp published = 27;
-  google.protobuf.Timestamp modified = 28;
+  bytes epsses = 27;
+  google.protobuf.Timestamp published = 28;
+  google.protobuf.Timestamp modified = 29;
 
   // extension
   optional bytes specific = 101;

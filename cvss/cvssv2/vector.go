@@ -382,9 +382,9 @@ func (in Vector) Override(v Vector) (out Vector) {
 	return
 }
 
-// IsZeroValue returns true if this CVSS(V2) vector is empty,
+// IsZero returns true if this CVSS(V2) vector is empty,
 // DefaultVector is also an empty vector.
-func (in Vector) IsZeroValue() bool {
+func (in Vector) IsZero() bool {
 	return in == DefaultVector() || in == Vector{}
 }
 
