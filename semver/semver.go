@@ -117,11 +117,11 @@ func IsUnboundedRange(rng string) bool {
 	return false
 }
 
-// IsUpperRangeOnly returns true if the given range is unbounded up range,
-// the following cases are only upper ranges.
+// IsLowerRangeOnly returns true if the given range has no upper range,
+// the following cases are only lower ranges.
 //  - ">=0"
 //  - ">0"
-func IsUpperRangeOnly(rng string) bool {
+func IsLowerRangeOnly(rng string) bool {
 	if rng != "" &&
 		!strings.Contains(rng, "||") && !strings.Contains(rng, ",") {
 		switch rng[0] {
@@ -132,11 +132,11 @@ func IsUpperRangeOnly(rng string) bool {
 	return false
 }
 
-// IsLowerRangeOnly returns true if the given range is unbounded low range,
+// IsUpperRangeOnly returns true if the given range has no lower range,
 // the following cases are only upper ranges.
 //  - "<6.3"
 //  - "<=6.3"
-func IsLowerRangeOnly(rng string) bool {
+func IsUpperRangeOnly(rng string) bool {
 	if rng != "" &&
 		!strings.Contains(rng, "||") && !strings.Contains(rng, ",") {
 		switch rng[0] {
