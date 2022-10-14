@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/seal-io/meta-api/semver"
+	"github.com/seal-io/meta-api/genver"
 )
 
 // Equal returns true if everything of the given package url are the same.
@@ -112,7 +112,7 @@ func (p PackageURL) CompatibleWith(q PackageURL, opts ...CompatibleOption) bool 
 		return false
 	}
 
-	if !o.IgnoreVersion && semver.MajorMinor(p.Version) != semver.MajorMinor(q.Version) {
+	if !o.IgnoreVersion && genver.MajorMinor(p.Version) != genver.MajorMinor(q.Version) {
 		return false
 	}
 

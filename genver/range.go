@@ -1,94 +1,64 @@
-package semver
+package genver
 
-import (
-	"strings"
-)
-
-type op = uint8
-
-const (
-	eq op = iota + 1
-	lt
-	gt
-	le
-	ge
-)
-
-func eval(l string, op op, r string) bool {
-	switch op {
-	case lt: // <
-		var c, ok = compare(l, r)
-		return c < 0 && ok
-	case gt: // >
-		var c, ok = compare(l, r)
-		return c > 0 && ok
-	case le: // <=
-		var c, ok = compare(l, r)
-		return c <= 0 && ok
-	case ge: // >=
-		var c, ok = compare(l, r)
-		return c >= 0 && ok
-	}
-	var c, ok = compare(l, r)
-	return c == 0 && ok
-}
+import "strings"
 
 // InRange returns true if the given version is in the given range.
 // nolint:cyclop
-func InRange(l, rng string) bool {
-	l = strings.ReplaceAll(l, " ", "")
+func InRange(v, rng string) bool {
+	v = strings.ReplaceAll(v, " ", "")
 	rng = strings.ReplaceAll(rng, " ", "")
 
+	pv := parse(v)
 	var or = false
 	for _, rngOr := range strings.Split(rng, "||") {
 		if len(rngOr) == 0 {
 			continue
 		}
 		var and = true
-		for _, r := range strings.Split(rngOr, ",") {
-			if len(r) == 0 {
+		for _, w := range strings.Split(rngOr, ",") {
+			if len(w) == 0 {
 				continue
 			}
-			switch r[0] {
+			switch w[0] {
 			case '<':
-				r = r[1:]
-				if len(r) == 0 {
+				w = w[1:]
+				if len(w) == 0 {
 					continue
 				}
-				switch r[0] {
+				switch w[0] {
 				case '=':
-					and = and && eval(l, le, r[1:])
+					and = and && pv.Le(w[1:])
 				default:
-					and = and && eval(l, lt, r)
+					and = and && pv.Lt(w)
 				}
 			case '>':
-				r = r[1:]
-				if len(r) == 0 {
+				w = w[1:]
+				if len(w) == 0 {
 					continue
 				}
-				switch r[0] {
+				switch w[0] {
 				case '=':
-					and = and && eval(l, ge, r[1:])
+					and = and && pv.Ge(w[1:])
 				default:
-					and = and && eval(l, gt, r)
+					and = and && pv.Gt(w)
 				}
 			case '=':
-				r = r[1:]
-				if len(r) == 0 {
+				w = w[1:]
+				if len(w) == 0 {
 					continue
 				}
-				switch r[0] {
+				switch w[0] {
 				case '=':
-					and = and && eval(l, eq, r[1:])
+					and = and && pv.Eq(w[1:])
 				case '>':
-					and = and && eval(l, ge, r[1:])
+					and = and && pv.Ge(w[1:])
 				case '<':
-					and = and && eval(l, le, r[1:])
+					and = and && pv.Le(w[1:])
 				default:
-					and = and && eval(l, eq, r)
+					and = and && pv.Eq(w)
 				}
 			default:
-				and = and && eval(l, eq, r)
+				and = and && pv.Eq(w)
 			}
 			if !and {
 				break
@@ -141,6 +111,20 @@ func IsUpperRangeOnly(rng string) bool {
 		!strings.Contains(rng, "||") && !strings.Contains(rng, ",") {
 		switch rng[0] {
 		case '<':
+			return true
+		}
+	}
+	return false
+}
+
+// IsEqualRangeOnly returns true if the given range has only equality range,
+// the following cases are only equality ranges.
+//  - "=6.3"
+func IsEqualRangeOnly(rng string) bool {
+	if rng != "" &&
+		!strings.Contains(rng, "||") && !strings.Contains(rng, ",") {
+		switch rng[0] {
+		case '=':
 			return true
 		}
 	}
