@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/seal-io/meta-api/cvss/compatible"
 	"github.com/seal-io/meta-api/cvss/cvssv2"
 	"github.com/seal-io/meta-api/cvss/cvssv3"
 )
 
 func TestParse(t *testing.T) {
 	type output struct {
-		r   Vector
+		r   compatible.Vector
 		err error
 	}
 	var testCases = []struct {

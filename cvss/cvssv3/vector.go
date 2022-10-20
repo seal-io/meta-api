@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"strings"
+
+	"github.com/seal-io/meta-api/cvss/compatible"
 )
 
 // DefaultVector returns a default definition of CVSS(V3) vector.
@@ -466,6 +468,23 @@ func (in Vector) String() string {
 	return sb.String()
 }
 
+// IsZero returns true if this CVSS(V3) vector is empty,
+// DefaultVector is also an empty vector.
+func (in Vector) IsZero() bool {
+	return in == DefaultVector() || in == Vector{}
+}
+
+// ToLatest converts this CVSS(V3) vector to the latest version CVSS vector,
+// this might loss precision, but try to keep in the same BaseSeverity or raise.
+func (in Vector) ToLatest() compatible.Vector {
+	if in.Version == Version31 {
+		return in
+	}
+	var out = in
+	out.Version = Version31
+	return out
+}
+
 // Override merges the valued metrics of the given Vector.
 func (in Vector) Override(v Vector) (out Vector) {
 	out = in
@@ -549,12 +568,6 @@ func (in Vector) Override(v Vector) (out Vector) {
 	}
 
 	return
-}
-
-// IsZero returns true if this CVSS(V3) vector is empty,
-// DefaultVector is also an empty vector.
-func (in Vector) IsZero() bool {
-	return in == DefaultVector() || in == Vector{}
 }
 
 // Version of CVSS(V3) vector.

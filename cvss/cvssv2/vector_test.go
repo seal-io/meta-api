@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"testing"
+
+	"github.com/seal-io/meta-api/cvss/cvssv3"
 )
 
 func TestParse(t *testing.T) {
@@ -323,7 +325,7 @@ func TestScore(t *testing.T) {
 	}
 }
 
-func TestString(t *testing.T) {
+func TestVector_String(t *testing.T) {
 	var testCases = []struct {
 		given    Vector
 		expected string
@@ -350,7 +352,116 @@ func TestString(t *testing.T) {
 	}
 }
 
-func TestOverride(t *testing.T) {
+func TestVector_ToLatest(t *testing.T) {
+	type output struct {
+		vectorString string
+		baseSeverity string
+	}
+	var testCases = []struct {
+		given    string
+		expected output
+	}{
+		{ // CVE-1999-0199     CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+			given: "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				baseSeverity: cvssv3.SeverityCritical,
+			},
+		},
+		{ // CVE-2002-20001    CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H
+			given: "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+				baseSeverity: cvssv3.SeverityHigh,
+			},
+		},
+		{ // CVE-2006-4245     CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H    raise AC/UI/S, severity
+			given: "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H",
+				baseSeverity: cvssv3.SeverityCritical,
+			},
+		},
+		{ // CVE-2007-6745     CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+			given: "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				baseSeverity: cvssv3.SeverityCritical,
+			},
+		},
+		{ // CVE-2010-1281     CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H    raise S, severity
+			given: "AV:N/AC:M/Au:N/C:C/I:C/A:C",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H",
+				baseSeverity: cvssv3.SeverityCritical,
+			},
+		},
+
+		// same v2 AV:L/AC:L/Au:N/ prefix
+		{ // CVE-2005-4890     CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H
+			given: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+				baseSeverity: cvssv3.SeverityHigh,
+			},
+		},
+		{ // CVE-2006-3635     CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H
+			given: "AV:L/AC:L/Au:N/C:N/I:N/A:C",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+				baseSeverity: cvssv3.SeverityMedium,
+			},
+		},
+		{ // CVE-2009-5150     CVSS:3.0/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H    raise PR
+			given: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+				baseSeverity: cvssv3.SeverityHigh,
+			},
+		},
+		{ // CVE-2009-0783     CVSS:3.0/AV:L/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:L    raise PR/C/I/A
+			given: "AV:L/AC:L/Au:N/C:P/I:P/A:P",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+				baseSeverity: cvssv3.SeverityHigh,
+			},
+		},
+		{ // CVE-2011-2343     CVSS:3.1/AV:P/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N    loss AV/PR
+			given: "AV:L/AC:L/Au:N/C:P/I:N/A:N",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
+				baseSeverity: cvssv3.SeverityLow,
+			},
+		},
+
+		// same v2 input, but get detail changed in v3
+		{ // CVE-2005-2350     CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N    loss C, raise I, severity
+			given: "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:N/I:H/A:N",
+				baseSeverity: cvssv3.SeverityHigh,
+			},
+		},
+		{ // CVE-2007-5967     CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N    raise S, severity
+			given: "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+			expected: output{
+				vectorString: "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:N/I:H/A:N",
+				baseSeverity: cvssv3.SeverityHigh,
+			},
+		},
+	}
+	for i, c := range testCases {
+		var actual output
+		var actualV = ShouldParse(c.given).ToLatest()
+		actual.vectorString = actualV.String()
+		actual.baseSeverity = actualV.BaseSeverity()
+		if actual != c.expected {
+			t.Errorf("#%d %s expected %v, but got %v", i+1, c.given, c.expected, actual)
+		}
+	}
+}
+
+func TestVector_Override(t *testing.T) {
 	type input struct {
 		r Vector
 		v Vector

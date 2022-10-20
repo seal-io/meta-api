@@ -378,7 +378,7 @@ func TestScore(t *testing.T) {
 	}
 }
 
-func TestString(t *testing.T) {
+func TestVector_String(t *testing.T) {
 	var testCases = []struct {
 		given    Vector
 		expected string
@@ -408,7 +408,29 @@ func TestString(t *testing.T) {
 	}
 }
 
-func TestOverride(t *testing.T) {
+func TestVector_ToLatest(t *testing.T) {
+	var testCases = []struct {
+		given    string
+		expected string
+	}{
+		{
+			given:    "CVSS:3.1/AV:N/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:H/MC:L",
+			expected: "CVSS:3.1/AV:N/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:H/MC:L",
+		},
+		{
+			given:    "CVSS:3.0/AV:N/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:H/MC:L",
+			expected: "CVSS:3.1/AV:N/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:H/MC:L",
+		},
+	}
+	for i, c := range testCases {
+		var actual = ShouldParse(c.given).ToLatest()
+		if actual.String() != c.expected {
+			t.Errorf("#%d expected %s, but got %s", i+1, c.expected, actual)
+		}
+	}
+}
+
+func TestVector_Override(t *testing.T) {
 	type input struct {
 		r Vector
 		v Vector

@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"math"
 	"strings"
+
+	"github.com/seal-io/meta-api/cvss/compatible"
+	"github.com/seal-io/meta-api/cvss/cvssv3"
 )
 
 // DefaultVector returns a default definition of CVSS(V2) vector.
@@ -326,6 +329,176 @@ func (in Vector) String() string {
 	return sb.String()
 }
 
+// IsZero returns true if this CVSS(V2) vector is empty,
+// DefaultVector is also an empty vector.
+func (in Vector) IsZero() bool {
+	return in == DefaultVector() || in == Vector{}
+}
+
+// ToLatest converts this CVSS(V2) vector to the latest version CVSS vector,
+// this might loss precision, but try to keep in the same BaseSeverity or raise.
+func (in Vector) ToLatest() compatible.Vector {
+	var out = cvssv3.DefaultVector()
+	// basic metrics
+	var bm = in.BasicMetrics
+	switch bm.AccessVector {
+	case AccessVectorLocal:
+		out.AttackVector = cvssv3.AttackVectorLocal
+	case AccessVectorAdjacentNetwork:
+		out.AttackVector = cvssv3.AttackVectorAdjacent
+	case AccessVectorNetwork:
+		out.AttackVector = cvssv3.AttackVectorNetwork
+	}
+	switch bm.AccessComplexity {
+	case AccessComplexityHigh:
+		out.AttackComplexity = cvssv3.AttackComplexityHigh
+		out.UserInteraction = cvssv3.UserInteractionRequired
+	case AccessComplexityMedium:
+		out.AttackComplexity = cvssv3.AttackComplexityLow
+		out.UserInteraction = cvssv3.UserInteractionRequired
+	case AccessComplexityLow:
+		out.AttackComplexity = cvssv3.AttackComplexityLow
+		out.UserInteraction = cvssv3.UserInteractionNone
+	}
+	switch bm.Authentication {
+	case AuthenticationMultiple:
+		out.PrivilegesRequired = cvssv3.PrivilegesRequiredHigh
+	case AuthenticationSingle:
+		out.PrivilegesRequired = cvssv3.PrivilegesRequiredLow
+	case AuthenticationNone:
+		if bm.AccessVector == AccessVectorLocal &&
+			bm.AccessComplexity == AccessComplexityLow {
+			out.PrivilegesRequired = cvssv3.PrivilegesRequiredLow
+		} else {
+			out.PrivilegesRequired = cvssv3.PrivilegesRequiredNone
+		}
+	}
+	if bm.AccessVector == AccessVectorNetwork &&
+		bm.AccessComplexity == AccessComplexityMedium &&
+		(bm.Authentication == AuthenticationSingle || bm.Authentication == AuthenticationNone) &&
+		(bm.IntegrityImpact == IntegrityImpactPartial || bm.IntegrityImpact == IntegrityImpactComplete) {
+		out.Scope = cvssv3.ScopeChanged
+	}
+	switch bm.ConfidentialityImpact {
+	case ConfidentialityImpactNone:
+		out.ConfidentialityImpact = cvssv3.ConfidentialityImpactNone
+	case ConfidentialityImpactPartial:
+		if bm.AccessVector == AccessVectorNetwork &&
+			bm.Authentication == AuthenticationNone &&
+			bm.AccessComplexity != AccessComplexityHigh {
+			out.ConfidentialityImpact = cvssv3.ConfidentialityImpactHigh
+		} else {
+			out.ConfidentialityImpact = cvssv3.ConfidentialityImpactLow
+		}
+	case ConfidentialityImpactComplete:
+		out.ConfidentialityImpact = cvssv3.ConfidentialityImpactHigh
+	}
+	switch bm.IntegrityImpact {
+	case IntegrityImpactNone:
+		out.IntegrityImpact = cvssv3.IntegrityImpactNone
+	case IntegrityImpactPartial:
+		if bm.AccessVector == AccessVectorNetwork &&
+			bm.Authentication == AuthenticationNone &&
+			bm.AccessComplexity != AccessComplexityHigh {
+			out.IntegrityImpact = cvssv3.IntegrityImpactHigh
+		} else {
+			out.IntegrityImpact = cvssv3.IntegrityImpactLow
+		}
+	case IntegrityImpactComplete:
+		out.IntegrityImpact = cvssv3.IntegrityImpactHigh
+	}
+	switch bm.AvailabilityImpact {
+	case AvailabilityImpactNone:
+		out.AvailabilityImpact = cvssv3.AvailabilityImpactNone
+	case AvailabilityImpactPartial:
+		if bm.AccessVector == AccessVectorNetwork &&
+			bm.Authentication == AuthenticationNone &&
+			bm.AccessComplexity != AccessComplexityHigh {
+			out.AvailabilityImpact = cvssv3.AvailabilityImpactHigh
+		} else {
+			out.AvailabilityImpact = cvssv3.AvailabilityImpactLow
+		}
+	case AvailabilityImpactComplete:
+		out.AvailabilityImpact = cvssv3.AvailabilityImpactHigh
+	}
+	if bm.ConfidentialityImpact == ConfidentialityImpactPartial &&
+		string(bm.ConfidentialityImpact) == string(bm.IntegrityImpact) &&
+		string(bm.IntegrityImpact) == string(bm.AvailabilityImpact) {
+		out.ConfidentialityImpact = cvssv3.ConfidentialityImpactHigh
+		out.IntegrityImpact = cvssv3.IntegrityImpactHigh
+		out.AvailabilityImpact = cvssv3.AvailabilityImpactHigh
+	}
+	// temporal metrics
+	var tm = in.TemporalMetrics
+	switch tm.Exploitability {
+	case ExploitabilityNotDefined:
+		out.ExploitCodeMaturity = cvssv3.ExploitCodeMaturityNotDefined
+	case ExploitabilityUnproven:
+		out.ExploitCodeMaturity = cvssv3.ExploitCodeMaturityUnproven
+	case ExploitabilityProofOfConcept:
+		out.ExploitCodeMaturity = cvssv3.ExploitCodeMaturityProofOfConcept
+	case ExploitabilityFunctional:
+		out.ExploitCodeMaturity = cvssv3.ExploitCodeMaturityFunctional
+	case ExploitabilityHigh:
+		out.ExploitCodeMaturity = cvssv3.ExploitCodeMaturityHigh
+	}
+	switch tm.RemediationLevel {
+	case RemediationLevelNotDefined:
+		out.RemediationLevel = cvssv3.RemediationLevelNotDefined
+	case RemediationLevelOfficialFix:
+		out.RemediationLevel = cvssv3.RemediationLevelOfficialFix
+	case RemediationLevelTemporaryFix:
+		out.RemediationLevel = cvssv3.RemediationLevelTemporaryFix
+	case RemediationLevelWorkaround:
+		out.RemediationLevel = cvssv3.RemediationLevelWorkaround
+	case RemediationLevelUnavailable:
+		out.RemediationLevel = cvssv3.RemediationLevelUnavailable
+	}
+	switch tm.ReportConfidence {
+	case ReportConfidenceNotDefined:
+		out.ReportConfidence = cvssv3.ReportConfidenceNotDefined
+	case ReportConfidenceUnconfirmed:
+		out.ReportConfidence = cvssv3.ReportConfidenceUnknown
+	case ReportConfidenceUncorroborated:
+		out.ReportConfidence = cvssv3.ReportConfidenceReasonable
+	case ReportConfidenceConfirmed:
+		out.ReportConfidence = cvssv3.ReportConfidenceConfirmed
+	}
+	// environmental metrics
+	var em = in.EnvironmentalMetrics
+	switch em.ConfidentialityRequirement {
+	case SecurityRequirementNotDefined:
+		out.ConfidentialityRequirement = cvssv3.SecurityRequirementNotDefined
+	case SecurityRequirementLow:
+		out.ConfidentialityRequirement = cvssv3.SecurityRequirementLow
+	case SecurityRequirementMedium:
+		out.ConfidentialityRequirement = cvssv3.SecurityRequirementMedium
+	case SecurityRequirementHigh:
+		out.ConfidentialityRequirement = cvssv3.SecurityRequirementHigh
+	}
+	switch em.IntegrityRequirement {
+	case SecurityRequirementNotDefined:
+		out.IntegrityRequirement = cvssv3.SecurityRequirementNotDefined
+	case SecurityRequirementLow:
+		out.IntegrityRequirement = cvssv3.SecurityRequirementLow
+	case SecurityRequirementMedium:
+		out.IntegrityRequirement = cvssv3.SecurityRequirementMedium
+	case SecurityRequirementHigh:
+		out.IntegrityRequirement = cvssv3.SecurityRequirementHigh
+	}
+	switch em.AvailabilityRequirement {
+	case SecurityRequirementNotDefined:
+		out.AvailabilityRequirement = cvssv3.SecurityRequirementNotDefined
+	case SecurityRequirementLow:
+		out.AvailabilityRequirement = cvssv3.SecurityRequirementLow
+	case SecurityRequirementMedium:
+		out.AvailabilityRequirement = cvssv3.SecurityRequirementMedium
+	case SecurityRequirementHigh:
+		out.AvailabilityRequirement = cvssv3.SecurityRequirementHigh
+	}
+	return out
+}
+
 // Override merges the valued metrics of the given Vector.
 func (in Vector) Override(v Vector) (out Vector) {
 	out = in
@@ -380,12 +553,6 @@ func (in Vector) Override(v Vector) (out Vector) {
 	}
 
 	return
-}
-
-// IsZero returns true if this CVSS(V2) vector is empty,
-// DefaultVector is also an empty vector.
-func (in Vector) IsZero() bool {
-	return in == DefaultVector() || in == Vector{}
 }
 
 // types of basic metrics.
