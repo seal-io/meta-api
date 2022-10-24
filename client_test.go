@@ -24,10 +24,7 @@ func TestClient(t *testing.T) {
 		var server = exec.CommandContext(runCtx, cmd, "grpc",
 			"--log-debug",
 			"--log-stdout",
-			"--serve-on="+udx,
-			"--storage-provider=tencent_cloud",
-			"--storage-region=ap-guangzhou",
-			"--storage-bucket=seal-meta-1303613262")
+			"--serve-on="+udx)
 		server.Stdout = testingOutput(t.Log)
 		server.Stderr = testingOutput(t.Error)
 		var err = server.Run()
