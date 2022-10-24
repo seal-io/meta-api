@@ -12,6 +12,11 @@ func IsValid(v string) bool {
 	return pv.Err == ""
 }
 
+// IsRelease returns true if the version is release version.
+func IsRelease(v string) bool {
+	return scoreRelease(v) >= 60
+}
+
 // Epoch returns the epoch version without v prefix,
 // if v is an invalid version string, Epoch returns the empty string.
 // e.g. Epoch("v2.1.0") == "0", Epoch("1:2.1.0") == "1", Epoch("0:2.1.0") == "0".
@@ -270,14 +275,14 @@ func compareRest(x, y []string) int {
 	}
 	if len(x) == 0 {
 		// evaluate y
-		if isRelease(y[0]) {
+		if IsRelease(y[0]) {
 			return 0
 		}
 		return +1
 	}
 	if len(y) == 0 {
 		// evaluate x
-		if isRelease(x[0]) {
+		if IsRelease(x[0]) {
 			return 0
 		}
 		return -1
@@ -432,10 +437,6 @@ func parseRelease(v string) (string, string) {
 		i--
 	}
 	return v[:i+1], v[i+1:]
-}
-
-func isRelease(v string) bool {
-	return scoreRelease(v) >= 60
 }
 
 func normalDiff(s int) int {
