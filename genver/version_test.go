@@ -449,3 +449,108 @@ func TestCompare(t *testing.T) {
 		}
 	}
 }
+
+func TestIsRelease(t *testing.T) {
+	var cases = []struct {
+		given    string
+		expected bool
+	}{
+		{
+			given:    "v1.0.0-alpha",
+			expected: false,
+		},
+		{
+			given:    "v1.0.0-alpha32",
+			expected: false,
+		},
+		{
+			given:    "4.2.0a",
+			expected: false,
+		},
+		{
+			given:    "3.0.0alpha",
+			expected: false,
+		},
+
+		{
+			given:    "2.0b5",
+			expected: false,
+		},
+		{
+			given:    "1.1.1k",
+			expected: false,
+		},
+		{
+			given:    "0.0.0-0",
+			expected: false,
+		},
+
+		{
+			given:    "3.0.0-CR2",
+			expected: false,
+		},
+		{
+			given:    "7.9.0-rc2",
+			expected: false,
+		},
+		{
+			given:    "v1.0.0-rc.1",
+			expected: false,
+		},
+		{
+			given:    "1.0.0.rc2.0",
+			expected: false,
+		},
+		{
+			given:    "0.2.0-prerelease.20200714185213",
+			expected: false,
+		},
+		{
+			given:    "4.1.0.RELEASE",
+			expected: true,
+		},
+		{
+			given:    "3.1-milestone-1",
+			expected: false,
+		},
+		{
+			given:    "2.3.0.M1",
+			expected: false,
+		},
+		{
+			given:    "3.0.0-stable",
+			expected: true,
+		},
+		{
+			given:    "4.3.5.Final",
+			expected: true,
+		},
+		{
+			given:    "3.3.3.FINAL",
+			expected: true,
+		},
+		{
+			given:    "4.2.0ga",
+			expected: true,
+		},
+
+		{
+			given:    "86.v7b_a_4a_55b_f3ec",
+			expected: false,
+		},
+		{
+			given:    "4.12-beta-1",
+			expected: false,
+		},
+		{
+			given:    "apache-arrow-0.17.0",
+			expected: false,
+		},
+	}
+	for _, c := range cases {
+		var actual = IsRelease(c.given)
+		if !reflect.DeepEqual(actual, c.expected) {
+			t.Errorf("parse(%q) == %v, but got %v", c.given, c.expected, actual)
+		}
+	}
+}

@@ -12,6 +12,20 @@ func IsValid(v string) bool {
 	return pv.Err == ""
 }
 
+// IsRelease returns true if the version is release version.
+func IsRelease(v string) bool {
+	pv := parse(v)
+	if pv.Err != "" {
+		return false
+	}
+
+	if len(pv.Rest) == 0 {
+		return true
+	}
+
+	return isRelease(pv.Rest[0])
+}
+
 // Epoch returns the epoch version without v prefix,
 // if v is an invalid version string, Epoch returns the empty string.
 // e.g. Epoch("v2.1.0") == "0", Epoch("1:2.1.0") == "1", Epoch("0:2.1.0") == "0".
