@@ -575,3 +575,35 @@ func TestVector_Override(t *testing.T) {
 		}
 	}
 }
+
+func TestGetScoreExampleBySeverity(t *testing.T) {
+	var testCases = []struct {
+		input  string
+		output string
+	}{
+		{
+			input:  SeverityHigh,
+			output: "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+		},
+		{
+			input:  SeverityMedium,
+			output: "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+		},
+		{
+			input:  SeverityLow,
+			output: "AV:N/AC:M/Au:S/C:P/I:N/A:N",
+		},
+	}
+	for _, c := range testCases {
+		var aVs, aBs, aIs, aEs = GetScoreExampleBySeverity(c.input)
+		var p = ShouldParse(c.output)
+		var eVs = c.output
+		var eBs = p.BaseScore()
+		var eIs = p.ImpactScore()
+		var eEs = p.ExploitabilityScore()
+		if aVs != eVs || aBs != eBs || aIs != eIs || aEs != eEs {
+			t.Errorf("GetScoreExampleBySeverity('%s') = %s, %.1f, %.1f, %.1f, but got %s, %.1f, %.1f, %.1f",
+				c.input, eVs, eBs, eIs, eEs, aVs, aBs, aIs, aEs)
+		}
+	}
+}

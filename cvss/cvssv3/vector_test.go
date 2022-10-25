@@ -709,3 +709,51 @@ func TestUpgradeV31(t *testing.T) {
 		}
 	}
 }
+
+func TestGetScoreExampleBySeverity(t *testing.T) {
+	var testCases = []struct {
+		input  string
+		output string
+	}{
+		{
+			input:  SeverityCritical,
+			output: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+		},
+		{
+			input:  SeverityHigh,
+			output: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:N",
+		},
+		{
+			input:  SeverityMedium,
+			output: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+		},
+		{
+			input:  SeverityLow,
+			output: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N",
+		},
+		{
+			input:  SeverityNone,
+			output: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N",
+		},
+		{
+			input:  "",
+			output: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N",
+		},
+		{
+			input:  "high",
+			output: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:N",
+		},
+	}
+	for _, c := range testCases {
+		var aVs, aBs, aIs, aEs = GetScoreExampleBySeverity(c.input)
+		var p = ShouldParse(c.output)
+		var eVs = c.output
+		var eBs = p.BaseScore()
+		var eIs = p.ImpactScore()
+		var eEs = p.ExploitabilityScore()
+		if aVs != eVs || aBs != eBs || aIs != eIs || aEs != eEs {
+			t.Errorf("GetScoreExampleBySeverity('%s') = %s, %.1f, %.1f, %.1f, but got %s, %.1f, %.1f, %.1f",
+				c.input, eVs, eBs, eIs, eEs, aVs, aBs, aIs, aEs)
+		}
+	}
+}
