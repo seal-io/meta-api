@@ -103,6 +103,7 @@ message WeaknessVulnerabilityTag {
   // information
   string description = 21;
   repeated string references = 22;
+  repeated string exploits = 30;
   string category = 23;
   bytes cvsses = 24;
   repeated string cwes = 25;
