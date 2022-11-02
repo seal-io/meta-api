@@ -120,11 +120,32 @@ message WeaknessVulnerabilityTags {
   repeated WeaknessVulnerabilityTag items = 1;
 }
 
+message WeaknessVulnerabilityFeature {
+  // primary key
+  string name = 1;
+
+  // management
+  google.protobuf.Timestamp create_time = 11;
+  google.protobuf.Timestamp update_time = 12;
+  optional google.protobuf.Timestamp deprecate_time = 13;
+
+  // information
+  string description = 21;
+  string type = 22;
+  optional bytes value = 23;
+  bool disabled = 24;
+}
+
+message WeaknessVulnerabilityFeatures {
+  repeated WeaknessVulnerabilityFeature items = 1;
+}
+
 enum DatasetIngestRequestType {
   Compliance_License_Tag = 0;
   Compliance_License = 1;
   Weakness_Vulnerability_Tag = 2;
   Weakness_Vulnerability = 3;
+  Weakness_Vulnerability_Feature = 4;
 }
 
 message DatasetIngestRequest {
@@ -148,6 +169,7 @@ message DatasetIngestResponse{
     ComplianceLicenseTags compliance_license_tags = 12;
     WeaknessVulnerabilities weakness_vulnerabilities = 13;
     WeaknessVulnerabilityTags weakness_vulnerability_tags = 14;
+    WeaknessVulnerabilityFeatures weakness_vulnerability_features = 15;
   }
 }
 
