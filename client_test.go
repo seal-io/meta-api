@@ -53,6 +53,9 @@ func TestClient(t *testing.T) {
 			case *schema.DatasetIngestResponse_WeaknessVulnerabilities:
 				t.Logf("ingested weakness vulnerability entities of window %d",
 					currentWindow)
+			case *schema.DatasetIngestResponse_WeaknessVulnerabilityFeatures:
+				t.Logf("ingested weakness vulnerability entities of window %d",
+					currentWindow)
 			}
 			return nil
 		})
