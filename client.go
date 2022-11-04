@@ -2,9 +2,9 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -35,7 +35,7 @@ func GetClient(ctx context.Context, listenOn string) (Client, error) {
 	}
 	var cc, err = grpc.DialContext(ctx, listenOn, opts...)
 	if err != nil {
-		return nil, errors.Wrapf(err, "error dialing %s", listenOn)
+		return nil, fmt.Errorf("error dialing %s: %w", listenOn, err)
 	}
 	var cli = &client{
 		cc: cc,
@@ -53,7 +53,7 @@ type IngestParser func(currentWindow int32, body schema.DatasetIngestResponseBod
 func (in *client) Ingest(ctx context.Context, typ schema.DatasetIngestRequestType, since time.Time, parse IngestParser) error {
 	var cli, err = schema.NewDatasetServiceClient(in.cc).Ingest(ctx)
 	if err != nil {
-		return errors.Wrap(err, "error creating ingest client")
+		return fmt.Errorf("error creating ingest client: %w", err)
 	}
 	var window int32
 	for window >= 0 {
@@ -66,17 +66,17 @@ func (in *client) Ingest(ctx context.Context, typ schema.DatasetIngestRequestTyp
 		}
 		err = cli.Send(req)
 		if err != nil {
-			return errors.Wrap(err, "error sending ingest request")
+			return fmt.Errorf("error sending ingest request: %w", err)
 		}
 		var resp *schema.DatasetIngestResponse
 		resp, err = cli.Recv()
 		if err != nil {
-			return errors.Wrap(err, "error receiving ingest response")
+			return fmt.Errorf("error receiving ingest response: %w", err)
 		}
 		if parse != nil && resp.GetBody() != nil {
 			err = parse(window, resp.GetBody())
 			if err != nil {
-				return errors.Wrap(err, "error parsing ingest response")
+				return fmt.Errorf("error parsing ingest response: %w", err)
 			}
 		}
 		window = resp.GetNextWindow()

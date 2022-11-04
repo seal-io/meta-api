@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -9,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/seal-io/meta-api/schema"

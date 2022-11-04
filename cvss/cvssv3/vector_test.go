@@ -1,10 +1,9 @@
 package cvssv3
 
 import (
+	"errors"
 	"fmt"
 	"testing"
-
-	"github.com/pkg/errors"
 )
 
 func TestParse(t *testing.T) {
