@@ -15,12 +15,12 @@ message ComplianceLicense {
   google.protobuf.Timestamp create_time = 11;
   google.protobuf.Timestamp update_time = 12;
   optional google.protobuf.Timestamp deprecate_time = 13;
-  repeated string tags = 14;
+  bytes tags = 14;
 
   // information
   string code = 21;
   string description = 22;
-  repeated string references = 23;
+  bytes references = 23;
   string text = 24;
   string standard_header = 25;
   string comments = 26;
@@ -44,7 +44,7 @@ message ComplianceLicenseTag {
 
   // information
   string description = 21;
-  repeated string references = 22;
+  bytes references = 22;
   string category = 23;
 
   // extension
@@ -65,20 +65,20 @@ message WeaknessVulnerability {
   google.protobuf.Timestamp create_time = 11;
   google.protobuf.Timestamp update_time = 12;
   optional google.protobuf.Timestamp deprecate_time = 13;
-  repeated string tags = 14;
+  bytes tags = 14;
   string purl_fuzzy = 15;
 
   // information
   string code = 21;
   string description = 22;
-  repeated string references = 23;
+  bytes references = 23;
   string summary = 24;
   string mitigation = 25;
   string exploitation = 26;
   string affected = 27;
-  repeated string patched = 28;
+  bytes patched = 28;
   bytes cvss = 29;
-  repeated string cwes = 30;
+  bytes cwes = 30;
   bytes epss = 31;
   google.protobuf.Timestamp published = 32;
   google.protobuf.Timestamp modified = 33;
@@ -102,15 +102,15 @@ message WeaknessVulnerabilityTag {
 
   // information
   string description = 21;
-  repeated string references = 22;
-  repeated string exploits = 30;
-  string category = 23;
-  bytes cvsses = 24;
-  repeated string cwes = 25;
-  bytes cpes = 26;
-  bytes epsses = 27;
-  google.protobuf.Timestamp published = 28;
-  google.protobuf.Timestamp modified = 29;
+  bytes references = 22;
+  bytes exploits = 23;
+  string category = 24;
+  bytes cvsses = 25;
+  bytes cwes = 26;
+  bytes cpes = 27;
+  bytes epsses = 28;
+  google.protobuf.Timestamp published = 29;
+  google.protobuf.Timestamp modified = 30;
 
   // extension
   optional bytes specific = 101;
