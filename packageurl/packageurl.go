@@ -34,6 +34,8 @@ var (
 const (
 	// TypeALPM is a pkg:alpm purl for Arch Linux and other users of the libalpm/pacman package manager, no default package repository.
 	TypeALPM = "alpm"
+	// TypeAlpine is a pkg:alpine purl for Alpine Linux, default repository is https://dl-cdn.alpinelinux.org/alpine/.
+	TypeAlpine = "alpine"
 	// TypeBitbucket is a pkg:bitbucket purl for Bitbucket-based packages, default repository is https://bitbucket.org.
 	TypeBitbucket = "bitbucket"
 	// TypeCocoapods is a pkg:cocoapods purl for Cocoapods, default repository is https://cdn.cocoapods.org/.
@@ -86,14 +88,9 @@ const (
 )
 
 // These are the candidate purl types as promoted in the spec,
-// they may be changed.
+// they may be changed or be moved to constants.
 // https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#other-candidate-types-to-define
-// NB(thxCode): we can view many candidates from the above references,
-// recommend to support one, then add one.
-var (
-	// TypeAlpine is a pkg:alpine purl for Alpine Linux, default repository is https://dl-cdn.alpinelinux.org/alpine/.
-	TypeAlpine = "alpine"
-)
+var ()
 
 // Qualifier represents a single key=value qualifier in the package url
 type Qualifier struct {
@@ -137,6 +134,26 @@ func (qq Qualifiers) Map() map[string]string {
 	}
 
 	return m
+}
+
+// First returns the first value by the given key.
+func (qq Qualifiers) First(key string) string {
+	for i := 0; i < len(qq); i++ {
+		if qq[i].Key == key {
+			return qq[i].Value
+		}
+	}
+	return ""
+}
+
+// All returns all values by the given key.
+func (qq Qualifiers) All(key string) (r []string) {
+	for i := 0; i < len(qq); i++ {
+		if qq[i].Key == key {
+			r = append(r, qq[i].Value)
+		}
+	}
+	return
 }
 
 func (qq Qualifiers) String() string {

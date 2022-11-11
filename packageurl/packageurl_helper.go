@@ -48,14 +48,35 @@ func (p PackageURL) Equal(q PackageURL) bool {
 }
 
 type _CompatibleWithOptions struct {
-	IgnoreVersion bool
-	IgnoreDistro  bool
-	IgnoreOS      bool
-	IgnoreArch    bool
-	IgnoreSubpath bool
+	IgnoreType      bool
+	IgnoreNamespace bool
+	IgnoreName      bool
+	IgnoreVersion   bool
+	IgnoreDistro    bool
+	IgnoreOS        bool
+	IgnoreArch      bool
+	IgnoreSubpath   bool
 }
 
 type CompatibleOption func(*_CompatibleWithOptions)
+
+func WithoutType() CompatibleOption {
+	return func(o *_CompatibleWithOptions) {
+		o.IgnoreType = true
+	}
+}
+
+func WithoutNamespace() CompatibleOption {
+	return func(o *_CompatibleWithOptions) {
+		o.IgnoreNamespace = true
+	}
+}
+
+func WithoutName() CompatibleOption {
+	return func(o *_CompatibleWithOptions) {
+		o.IgnoreName = true
+	}
+}
 
 func WithoutVersion() CompatibleOption {
 	return func(o *_CompatibleWithOptions) {
@@ -102,13 +123,13 @@ func (p PackageURL) CompatibleWith(q PackageURL, opts ...CompatibleOption) bool 
 		opts[i](&o)
 	}
 
-	if p.Type != q.Type {
+	if !o.IgnoreType && p.Type != q.Type {
 		return false
 	}
-	if p.Namespace != q.Namespace {
+	if !o.IgnoreNamespace && p.Namespace != q.Namespace {
 		return false
 	}
-	if p.Name != q.Name {
+	if !o.IgnoreName && p.Name != q.Name {
 		return false
 	}
 
