@@ -18,7 +18,7 @@ func TestEncode(t *testing.T) {
 		{
 			given: input{
 				typ: TypeFloat64,
-				val: "0.5",
+				val: "0.2",
 			},
 			expected: []byte{63, 201, 153, 153, 153, 153, 153, 154},
 		},
