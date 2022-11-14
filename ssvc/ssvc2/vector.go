@@ -765,7 +765,7 @@ func (in HumanImpact) isDefined() bool {
 
 // Priority of SSVC(V2) vector, abbreviates as 'P'(on StakeholderDeployer side) or 'R'(on StakeholderSupplier side),
 // it means the action should take after decision.
-type Priority string
+type Priority = string
 
 const (
 	// PriorityDefer means as below,
@@ -788,15 +788,3 @@ const (
 	//  - for StakeholderSupplier, it means that develop and release a fix as quickly as possible, drawing on all available resources, potentially including drawing on or coordinating resources from other parts of the organization.
 	PriorityImmediate Priority = "I"
 )
-
-func (in Priority) isDefined() bool {
-	switch in {
-	default:
-		return false
-	case PriorityDefer:
-	case PriorityScheduled:
-	case PriorityOutOfCycle:
-	case PriorityImmediate:
-	}
-	return true
-}
