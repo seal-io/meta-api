@@ -77,41 +77,36 @@ func TestDecode(t *testing.T) {
 	}{
 		{
 			given: input{
-				typ:      TypeFloat64,
-				val:      []byte{63, 224, 0, 0, 0, 0, 0, 0},
-				receiver: func() *float64 { var r float64; return &r }(),
+				typ: TypeFloat64,
+				val: []byte{63, 224, 0, 0, 0, 0, 0, 0},
 			},
 			expected: 0.5,
 		},
 		{
 			given: input{
-				typ:      TypeInt64,
-				val:      []byte{0, 0, 0, 0, 0, 0, 0, 14},
-				receiver: func() *int64 { var r int64; return &r }(),
+				typ: TypeInt64,
+				val: []byte{0, 0, 0, 0, 0, 0, 0, 14},
 			},
 			expected: int64(14),
 		},
 		{
 			given: input{
-				typ:      TypeBoolean,
-				val:      []byte{1},
-				receiver: func() *bool { var r bool; return &r }(),
+				typ: TypeBoolean,
+				val: []byte{1},
 			},
 			expected: true,
 		},
 		{
 			given: input{
-				typ:      TypeString,
-				val:      []byte(`yzx`),
-				receiver: func() *string { var r string; return &r }(),
+				typ: TypeString,
+				val: []byte(`yzx`),
 			},
 			expected: `yzx`,
 		},
 		{
 			given: input{
-				typ:      TypeComplexJSON,
-				val:      []byte(`{"1":"1","2":"2","3":3}`),
-				receiver: func() *map[string]any { var r map[string]any; return &r }(),
+				typ: TypeComplexJSON,
+				val: []byte(`{"1":"1","2":"2","3":3}`),
 			},
 			expected: map[string]any{
 				"1": "1",
@@ -121,19 +116,17 @@ func TestDecode(t *testing.T) {
 		},
 		{
 			given: input{
-				typ:      TypeComplexJSON,
-				val:      []byte(`["1","2"]`),
-				receiver: func() *[]string { var r []string; return &r }(),
+				typ: TypeComplexJSON,
+				val: []byte(`["1","2"]`),
 			},
-			expected: []string{"1", "2"},
+			expected: []any{"1", "2"},
 		},
 	}
 	for i, c := range testCases {
-		var err = Decode(c.given.typ, c.given.val, c.given.receiver)
+		var actual, err = Decode(c.given.typ, c.given.val)
 		if err != nil {
 			t.Errorf("case %d failed: %v", i+1, err)
 		} else {
-			var actual = reflect.ValueOf(c.given.receiver).Elem().Interface()
 			if !reflect.DeepEqual(c.expected, actual) {
 				t.Errorf("case %d expected %v, but got %v",
 					i+1, c.expected, actual)

@@ -167,41 +167,28 @@ func Encode(typ Type, val any) ([]byte, error) {
 	return b, nil
 }
 
-func Decode(typ Type, b []byte, r any) error {
+func Decode(typ Type, b []byte) (any, error) {
 	if !IsValid(typ) {
-		return errors.New("unknown type")
+		return nil, errors.New("unknown type")
 	}
-	var rv = reflect.ValueOf(r)
-	var rvk = rv.Kind()
-	if rvk != reflect.Pointer || rv.IsNil() {
-		return errors.New("invalid receiver: not a pointer")
-	}
-	rv = rv.Elem()
 	switch typ {
 	case TypeFloat64:
-		if rv.Kind() != reflect.Float64 {
-			return errors.New("invalid receiver: not a float64 pointer")
-		}
-		rv.Set(reflect.ValueOf(math.Float64frombits(byteOrder.Uint64(b))))
+		return math.Float64frombits(byteOrder.Uint64(b)), nil
 	case TypeInt64:
-		if rv.Kind() != reflect.Int64 {
-			return errors.New("invalid receiver: not a int64 pointer")
-		}
-		rv.Set(reflect.ValueOf(int64(byteOrder.Uint64(b))))
+		return int64(byteOrder.Uint64(b)), nil
 	case TypeBoolean:
-		if rv.Kind() != reflect.Bool {
-			return errors.New("invalid receiver: not a boolean pointer")
-		}
-		rv.Set(reflect.ValueOf(bytes.Equal(b, []byte{1})))
+		return bytes.Equal(b, []byte{1}), nil
 	case TypeString:
-		if rv.Kind() != reflect.String {
-			return errors.New("invalid receiver: not a string pointer")
-		}
-		rv.Set(reflect.ValueOf(b2s(b)))
+		return b2s(b), nil
 	case TypeComplexJSON:
-		return json.Unmarshal(b, r)
+		var r any
+		var err = json.Unmarshal(b, &r)
+		if err != nil {
+			return nil, err
+		}
+		return r, nil
 	}
-	return nil
+	return nil, nil
 }
 
 func s2b(s string) (bytes []byte) {
