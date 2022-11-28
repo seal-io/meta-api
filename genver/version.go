@@ -80,12 +80,13 @@ func Parse(v string) ParsedVersion {
 
 // ParsedVersion holds the version information after parsed.
 type ParsedVersion struct {
-	Epoch string
-	Major string
-	Minor string
-	Patch string
-	Rest  []string
-	Err   string
+	Original string
+	Epoch    string
+	Major    string
+	Minor    string
+	Patch    string
+	Rest     []string
+	Err      string
 }
 
 func (pv ParsedVersion) Compare(w string) int {
@@ -127,6 +128,8 @@ func parse(v string) (p ParsedVersion) {
 	if v == "" {
 		return
 	}
+
+	p.Original = v
 	if v[0] == 'v' {
 		v = v[1:]
 	}
